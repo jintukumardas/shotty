@@ -1,0 +1,214 @@
+// Prisma Schema for Shotty Trading Butler Bot
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  address       String         @unique
+  email         String?        @unique
+  name          String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  portfolios    Portfolio[]
+  trades        Trade[]
+  strategies    Strategy[]
+  notifications Notification[]
+  settings      UserSettings?
+}
+
+model UserSettings {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id])
+
+  defaultSlippage   Float    @default(0.5)
+  gasLimit          Int      @default(500000)
+  notifyOnTrade     Boolean  @default(true)
+  notifyOnStrategy  Boolean  @default(true)
+  darkMode          Boolean  @default(false)
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Portfolio {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+
+  totalValue  Float     @default(0)
+  chains      String[]
+
+  tokens      TokenBalance[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+}
+
+model TokenBalance {
+  id          String    @id @default(cuid())
+  portfolioId String
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
+
+  symbol      String
+  name        String
+  address     String
+  chain       String
+  balance     String
+  valueUSD    Float     @default(0)
+  logoURI     String?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([portfolioId, address, chain])
+  @@index([portfolioId])
+}
+
+model Trade {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  strategyId  String?
+  strategy    Strategy? @relation(fields: [strategyId], references: [id])
+
+  type        TradeType
+  status      TradeStatus
+
+  fromToken   String
+  toToken     String
+  fromAmount  String
+  toAmount    String
+  chain       String
+
+  txHash      String?   @unique
+  gasUsed     String?
+  gasPrice    String?
+
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  @@index([userId])
+  @@index([strategyId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Strategy {
+  id          String          @id @default(cuid())
+  userId      String
+  user        User            @relation(fields: [userId], references: [id])
+
+  name        String
+  type        StrategyType
+  status      StrategyStatus  @default(ACTIVE)
+
+  config      Json            // Store strategy configuration as JSON
+  performance Json            // Store performance metrics as JSON
+
+  trades      Trade[]
+  executions  StrategyExecution[]
+
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+model StrategyExecution {
+  id          String    @id @default(cuid())
+  strategyId  String
+  strategy    Strategy  @relation(fields: [strategyId], references: [id])
+
+  success     Boolean
+  details     Json?     // Execution details
+  error       String?
+
+  executedAt  DateTime  @default(now())
+
+  @@index([strategyId])
+  @@index([executedAt])
+}
+
+model MarketData {
+  id              String    @id @default(cuid())
+  symbol          String
+  chain           String?
+
+  price           Float
+  priceChange24h  Float
+  volume24h       Float
+  marketCap       Float
+  high24h         Float
+  low24h          Float
+
+  timestamp       DateTime  @default(now())
+
+  @@unique([symbol, chain, timestamp])
+  @@index([symbol])
+  @@index([timestamp])
+}
+
+model Notification {
+  id          String            @id @default(cuid())
+  userId      String
+  user        User              @relation(fields: [userId], references: [id])
+
+  type        NotificationType
+  title       String
+  message     String
+  metadata    Json?
+  read        Boolean           @default(false)
+
+  createdAt   DateTime          @default(now())
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+}
+
+// Enums
+enum TradeType {
+  BUY
+  SELL
+  SWAP
+}
+
+enum TradeStatus {
+  PENDING
+  EXECUTING
+  COMPLETED
+  FAILED
+}
+
+enum StrategyType {
+  DCA
+  GRID
+  MOMENTUM
+  CUSTOM
+}
+
+enum StrategyStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  FAILED
+}
+
+enum NotificationType {
+  TRADE
+  ALERT
+  STRATEGY
+  SYSTEM
+}
