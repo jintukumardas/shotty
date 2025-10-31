@@ -57,7 +57,7 @@
 | **💰 Balance Checker** | Real-time wallet balance queries | Native Flow Network | ✅ Live |
 | **📊 Transaction History** | View recent blockchain transactions | Block Explorer API | ✅ Live |
 | **📱 QR Code Generator** | Generate scannable QR codes for wallet addresses | Client-side Generation | ✅ Live |
-| **🪙 ERC20 Token Factory** | Create custom ERC20 tokens with your parameters | [`0xbb3E...26a0`](https://evm-testnet.flowscan.io/address/0xbb3E64F2D72ac754c7C98eC43b549F0F78bd26a0) | ✅ Live |
+| **🪙 ERC20 Token Factory** | Create custom ERC20 tokens with your parameters | [`0xE49c...33f5`](https://evm-testnet.flowscan.io/address/0xE49c80345b9B043dAefc3CD2e5FE6b31995c33f5) | ✅ Live |
 | **🔄 Token Ownership Transfer** | Transfer ownership of created ERC20 tokens | Same as Token Factory | ✅ Live |
 | **📋 Token Portfolio** | View all ERC20 tokens you've created | Same as Token Factory | ✅ Live |
 | **🌉 Cross-Chain Bridge** | Bridge tokens across 20+ blockchain networks | DeFi Aggregator (Mainnet Only) | ✅ Live |
@@ -195,7 +195,7 @@
    NEXT_PUBLIC_DOMAIN_CONTRACT_ADDRESS=0x55422db56C11a62AfB285e70c6a541A9E80B70f3
    NEXT_PUBLIC_ADDRESSBOOK_CONTRACT_ADDRESS=0x4354BE4A734E3DC61182F0e09Bc5B0cc264CC218
    NEXT_PUBLIC_SECURESTORAGE_CONTRACT_ADDRESS=0x42D2e14cb7d931216F0154625db3dA4F3e90525B
-   NEXT_PUBLIC_TOKEN_FACTORY_CONTRACT_ADDRESS=0xbb3E64F2D72ac754c7C98eC43b549F0F78bd26a0
+   NEXT_PUBLIC_ERC20_FACTORY_ADDRESS=0xE49c80345b9B043dAefc3CD2e5FE6b31995c33f5
    NEXT_PUBLIC_BATCH_CONTRACT_ADDRESS=0xC3d8AfB3462f726Db9d793DefdCFC67D7E12DBa3
    NEXT_PUBLIC_SCHEDULED_CONTRACT_ADDRESS=0xfF0e7F71a0e19E0BF037Bd90Ba30A2Ee409E53a7
    NEXT_PUBLIC_FLOW_ACTIONS_CONTRACT_ADDRESS=0xe4ab654a03826E15039913D0D0E1E4Af2117bA0d
@@ -260,7 +260,7 @@ Shotty: Let me help you mint an NFT! Please provide:
 | **Domain Registry** | `0x55422db56C11a62AfB285e70c6a541A9E80B70f3` | [View →](https://evm-testnet.flowscan.io/address/0x55422db56C11a62AfB285e70c6a541A9E80B70f3) | .flow domain registration |
 | **Address Book** | `0x4354BE4A734E3DC61182F0e09Bc5B0cc264CC218` | [View →](https://evm-testnet.flowscan.io/address/0x4354BE4A734E3DC61182F0e09Bc5B0cc264CC218) | On-chain contact manager |
 | **Secure Storage** | `0x42D2e14cb7d931216F0154625db3dA4F3e90525B` | [View →](https://evm-testnet.flowscan.io/address/0x42D2e14cb7d931216F0154625db3dA4F3e90525B) | IPFS document storage |
-| **ERC20 Token Factory** | `0xbb3E64F2D72ac754c7C98eC43b549F0F78bd26a0` | [View →](https://evm-testnet.flowscan.io/address/0xbb3E64F2D72ac754c7C98eC43b549F0F78bd26a0) | Custom ERC20 token deployment |
+| **ERC20 Token Factory** | `0xE49c80345b9B043dAefc3CD2e5FE6b31995c33f5` | [View →](https://evm-testnet.flowscan.io/address/0xE49c80345b9B043dAefc3CD2e5FE6b31995c33f5) | Custom ERC20 token deployment |
 | **Batch Transactions** | `0xC3d8AfB3462f726Db9d793DefdCFC67D7E12DBa3` | [View →](https://evm-testnet.flowscan.io/address/0xC3d8AfB3462f726Db9d793DefdCFC67D7E12DBa3) | Multi-operation batch execution |
 | **Scheduled Transactions** | `0xfF0e7F71a0e19E0BF037Bd90Ba30A2Ee409E53a7` | [View →](https://evm-testnet.flowscan.io/address/0xfF0e7F71a0e19E0BF037Bd90Ba30A2Ee409E53a7) | Time-locked transaction scheduling |
 | **Flow Actions** | `0xe4ab654a03826E15039913D0D0E1E4Af2117bA0d` | [View →](https://evm-testnet.flowscan.io/address/0xe4ab654a03826E15039913D0D0E1E4Af2117bA0d) | Composable workflow engine |

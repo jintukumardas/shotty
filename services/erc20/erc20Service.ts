@@ -139,7 +139,7 @@ export class ERC20Service {
 
       const factoryContract = await this.getWriteContract();
 
-      // Create the token
+      // Create the token - the function returns the token address
       const tx = await factoryContract.createToken(
         name,
         symbol,
@@ -152,24 +152,45 @@ export class ERC20Service {
       // Wait for transaction confirmation
       const receipt = await tx.wait();
 
-      console.log('Token creation confirmed:', receipt);
+      console.log('Token creation confirmed. Receipt logs:', receipt.logs.length);
 
-      // Find the TokenCreated event to get the token address
-      const event = receipt.logs.find((log: any) => {
+      // Parse the TokenCreated event to get the token address
+      let tokenAddress: string | null = null;
+
+      // Log all events for debugging
+      console.log('Attempting to parse logs...');
+
+      for (let i = 0; i < receipt.logs.length; i++) {
+        const log = receipt.logs[i];
+        console.log(`Log ${i}:`, {
+          address: log.address,
+          topics: log.topics,
+        });
+
         try {
-          const parsedLog = factoryContract.interface.parseLog(log);
-          return parsedLog?.name === 'TokenCreated';
-        } catch {
-          return false;
-        }
-      });
+          const parsedLog = factoryContract.interface.parseLog({
+            topics: [...log.topics],
+            data: log.data
+          });
 
-      if (!event) {
-        throw new Error('Token creation event not found');
+          console.log(`Parsed log ${i}:`, parsedLog?.name);
+
+          if (parsedLog && parsedLog.name === 'TokenCreated') {
+            tokenAddress = parsedLog.args[0];
+            console.log('Found TokenCreated event! Token address:', tokenAddress);
+            break;
+          }
+        } catch (error: any) {
+          console.log(`Could not parse log ${i}:`, error.message);
+          continue;
+        }
       }
 
-      const parsedEvent = factoryContract.interface.parseLog(event);
-      const tokenAddress = parsedEvent?.args[0];
+      if (!tokenAddress) {
+        console.error('Failed to find TokenCreated event. Total logs:', receipt.logs.length);
+        console.error('Factory contract address:', FACTORY_CONTRACT_ADDRESS);
+        throw new Error('Token creation event not found in transaction receipt. Please check console for details.');
+      }
 
       return {
         tokenAddress,
