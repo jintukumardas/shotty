@@ -30,6 +30,7 @@ export interface RedeemLinkData {
   creator: string;
   amount: string;
   token: string;
+  txHash: string;
   expiresAt?: Date;
 }
 
@@ -115,20 +116,16 @@ export async function createRedeemLink(
       data: data,
     });
 
-    console.log('⏳ Waiting for transaction confirmation...');
+    txHash = tx.hash;
+    console.log('⏳ Waiting for transaction confirmation...', txHash);
+
     receipt = await tx.wait();
 
     if (!receipt) {
       throw new Error('Transaction receipt not found');
     }
 
-    txHash = receipt.hash;
-
     console.log(`✅ Redeem link created with tx: ${txHash}`);
-
-    if (!receipt) {
-      throw new Error('Transaction receipt not found');
-    }
 
     // Get provider for parsing events
     let providerForParsing;
@@ -167,6 +164,7 @@ export async function createRedeemLink(
       creator,
       amount,
       token,
+      txHash,
       expiresAt: new Date(Date.now() + expiresIn * 60 * 60 * 1000),
     };
 
@@ -224,14 +222,14 @@ export async function redeemTokens(params: RedeemTokensParams): Promise<string> 
       data: data,
     });
 
-    console.log('⏳ Waiting for transaction confirmation...');
+    const txHash = tx.hash;
+    console.log('⏳ Waiting for transaction confirmation...', txHash);
+
     const receipt = await tx.wait();
 
     if (!receipt) {
       throw new Error('Transaction receipt not found');
     }
-
-    const txHash = receipt.hash;
 
     console.log(`✅ Tokens redeemed with tx: ${txHash}`);
 

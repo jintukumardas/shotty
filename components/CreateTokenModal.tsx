@@ -87,8 +87,8 @@ export default function CreateTokenModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[85vh] flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-xl max-w-lg w-full my-8 flex flex-col">
         {/* Header - Fixed */}
         <div className="flex-shrink-0 flex justify-between items-center p-4 border-b border-gray-200">
           <div className="flex items-center gap-2">
@@ -105,7 +105,7 @@ export default function CreateTokenModal({
         </div>
 
         {/* Form - Scrollable */}
-        <div className="flex-1 overflow-y-auto p-4 min-h-0">
+        <div className="p-4">
           <form onSubmit={handleSubmit} className="space-y-3">
           {/* Token Name */}
           <div>

@@ -66,13 +66,14 @@ export class AddressBookService {
     }
 
     const tx = await this.contract.addContact(name.trim(), wallet, notes);
+    const txHash = tx.hash;
     const receipt = await tx.wait();
 
     if (!receipt) {
       throw new Error('Transaction receipt not available');
     }
 
-    return { txHash: receipt.hash };
+    return { txHash };
   }
 
   /**
@@ -87,13 +88,14 @@ export class AddressBookService {
     }
 
     const tx = await this.contract.updateContact(name, newWallet, notes);
+    const txHash = tx.hash;
     const receipt = await tx.wait();
 
     if (!receipt) {
       throw new Error('Transaction receipt not available');
     }
 
-    return { txHash: receipt.hash };
+    return { txHash };
   }
 
   /**
@@ -101,13 +103,14 @@ export class AddressBookService {
    */
   async removeContact(name: string): Promise<{ txHash: string }> {
     const tx = await this.contract.removeContact(name);
+    const txHash = tx.hash;
     const receipt = await tx.wait();
 
     if (!receipt) {
       throw new Error('Transaction receipt not available');
     }
 
-    return { txHash: receipt.hash };
+    return { txHash };
   }
 
   /**

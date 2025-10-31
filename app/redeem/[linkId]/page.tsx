@@ -3,14 +3,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useWallet } from '@/services/blockchain/useWallet';
-import { Gift, Loader2, CheckCircle, XCircle, AlertCircle, Network } from 'lucide-react';
+import { Gift, Loader2, CheckCircle, XCircle, AlertCircle, Network, ExternalLink, Copy } from 'lucide-react';
 import { redeemTokens } from '@/services/escrow/redeemLinks';
 import { switchToFlowEvmTestnet } from '@/utils/addNetwork';
 
 export default function RedeemPage() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const { address, isConnected } = useWallet();
+  const { address, isConnected, refreshBalance } = useWallet();
 
   const linkId = params?.linkId as string;
   const secret = searchParams?.get('secret');
@@ -23,6 +23,18 @@ export default function RedeemPage() {
   const [message, setMessage] = useState('');
   const [txHash, setTxHash] = useState('');
   const [currentChainId, setCurrentChainId] = useState<number | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const getExplorerUrl = (txHash: string) => {
+    // Use Flow EVM Testnet explorer
+    return `https://evm-testnet.flowscan.io/tx/${txHash}`;
+  };
 
   // Track the actual current network from MetaMask
   useEffect(() => {
@@ -129,6 +141,12 @@ export default function RedeemPage() {
 
       // Refresh link details to show redeemed status
       await fetchLinkDetails();
+
+      // Refresh wallet balance to show updated amount
+      if (refreshBalance) {
+        await refreshBalance();
+        console.log('✅ Balance refreshed');
+      }
     } catch (error) {
       console.error('Redemption error:', error);
       setStatus('error');
@@ -283,16 +301,42 @@ export default function RedeemPage() {
               <h3 className="text-xl font-semibold text-white mb-2">Success!</h3>
               <p className="text-gray-400 mb-4">{message}</p>
               {txHash && (
-                <div className="bg-[#161616] rounded-lg p-4 mb-4">
-                  <p className="text-xs text-gray-500 mb-1">Transaction Hash</p>
-                  <p className="text-xs font-mono text-gray-400 break-all">{txHash}</p>
+                <div className="bg-[#161616] rounded-lg p-4 mb-4 space-y-3">
+                  <div>
+                    <p className="text-xs text-gray-500 mb-2">Transaction Hash</p>
+                    <div className="flex items-center gap-2 bg-black/30 rounded-lg p-2">
+                      <p className="text-xs font-mono text-gray-400 break-all flex-1">
+                        {txHash.slice(0, 10)}...{txHash.slice(-8)}
+                      </p>
+                      <button
+                        onClick={() => copyToClipboard(txHash)}
+                        className="p-2 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0"
+                        title="Copy full hash"
+                      >
+                        {copied ? (
+                          <CheckCircle className="w-4 h-4 text-green-400" />
+                        ) : (
+                          <Copy className="w-4 h-4 text-gray-400" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                  <a
+                    href={getExplorerUrl(txHash)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 px-4 py-2 bg-[#00EF8B]/10 hover:bg-[#00EF8B]/20 border border-[#00EF8B]/30 rounded-lg text-[#00EF8B] text-sm font-medium transition-all"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    View on Flow Explorer
+                  </a>
                 </div>
               )}
               <a
-                href="/dashboard"
+                href="/"
                 className="inline-block px-6 py-3 bg-gradient-to-r from-[#00EF8B] to-[#00D9FF] rounded-lg text-white font-medium hover:opacity-90 transition-opacity"
               >
-                Go to Dashboard
+                Back to Home
               </a>
             </div>
           )}

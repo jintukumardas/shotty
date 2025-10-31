@@ -103,8 +103,8 @@ export class ScheduledService {
         params.description,
         { value: params.value }
       );
-
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
       // Parse event to get schedule ID
       const event = receipt.logs.find(
@@ -119,7 +119,7 @@ export class ScheduledService {
 
       return {
         scheduleId,
-        txHash: receipt.hash
+        txHash
       };
     } catch (error: any) {
       console.error('Schedule transaction error:', error);
@@ -146,8 +146,8 @@ export class ScheduledService {
         description,
         { value: amount }
       );
-
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
       // Parse event to get schedule ID
       const event = receipt.logs.find(
@@ -162,7 +162,7 @@ export class ScheduledService {
 
       return {
         scheduleId,
-        txHash: receipt.hash
+        txHash
       };
     } catch (error: any) {
       console.error('Schedule transfer error:', error);
@@ -178,11 +178,12 @@ export class ScheduledService {
       const contract = await this.getWriteContract();
 
       const tx = await contract.executeScheduledTransaction(scheduleId);
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
       return {
         success: true,
-        txHash: receipt.hash
+        txHash
       };
     } catch (error: any) {
       console.error('Execute scheduled transaction error:', error);
@@ -198,9 +199,10 @@ export class ScheduledService {
       const contract = await this.getWriteContract();
 
       const tx = await contract.cancelScheduledTransaction(scheduleId);
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
-      return { txHash: receipt.hash };
+      return { txHash };
     } catch (error: any) {
       console.error('Cancel scheduled transaction error:', error);
       throw new Error(error.message || 'Failed to cancel scheduled transaction');

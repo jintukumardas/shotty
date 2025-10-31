@@ -150,8 +150,8 @@ export class DomainService {
         metadata,
         { value: fee }
       );
-
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
       // Parse the DomainRegistered event to get domainHash
       const event = receipt.logs.find(
@@ -162,7 +162,7 @@ export class DomainService {
 
       return {
         domainHash,
-        txHash: receipt.hash,
+        txHash,
       };
     } catch (error) {
       console.error('Error registering domain:', error);
@@ -225,8 +225,8 @@ export class DomainService {
         metadatas,
         { value: totalFee }
       );
-
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
       // Parse events to get all domain hashes
       const events = receipt.logs.filter(
@@ -237,7 +237,7 @@ export class DomainService {
 
       return {
         domainHashes,
-        txHash: receipt.hash,
+        txHash,
       };
     } catch (error) {
       console.error('Error batch registering domains:', error);
@@ -288,11 +288,11 @@ export class DomainService {
         params.newChainId,
         params.newAddress
       );
-
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
       return {
-        txHash: receipt.hash,
+        txHash,
       };
     } catch (error) {
       console.error('Error updating domain resolution:', error);
@@ -317,10 +317,11 @@ export class DomainService {
       }
 
       const tx = await contract.transferDomain(domainName, newOwner);
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
       return {
-        txHash: receipt.hash,
+        txHash,
       };
     } catch (error) {
       console.error('Error transferring domain:', error);
@@ -340,10 +341,11 @@ export class DomainService {
       const fee = await contract.registrationFee();
 
       const tx = await contract.renewDomain(domainName, { value: fee });
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
       return {
-        txHash: receipt.hash,
+        txHash,
       };
     } catch (error) {
       console.error('Error renewing domain:', error);
@@ -369,10 +371,11 @@ export class DomainService {
         domainName,
         metadataString
       );
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
       return {
-        txHash: receipt.hash,
+        txHash,
       };
     } catch (error) {
       console.error('Error updating domain metadata:', error);

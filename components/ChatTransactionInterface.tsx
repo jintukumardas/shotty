@@ -29,6 +29,7 @@ interface Message {
     url: string;
     amount: string;
     token: string;
+    txHash?: string;
   };
   nftData?: {
     nfts: Array<{
@@ -517,6 +518,7 @@ const ChatTransactionInterface = forwardRef<{ setInput: (text: string) => void }
               url: linkData.url,
               amount: intent.amount.toString(),
               token: intent.token,
+              txHash: linkData.txHash,
             };
 
             addRedeemLinkMessage(
@@ -985,7 +987,7 @@ const ChatTransactionInterface = forwardRef<{ setInput: (text: string) => void }
       const receipt = await tx.wait();
 
       const transaction = {
-        hash: receipt?.hash || "0x",
+        hash: txHash || "0x",
         status: 'success' as const,
         details: {
           fromChain: swapData.fromChain,
@@ -1441,6 +1443,22 @@ const ChatTransactionInterface = forwardRef<{ setInput: (text: string) => void }
                             Copy
                           </button>
                         </div>
+
+                        {/* Transaction Hash Link */}
+                        {message.redeemLink.txHash && (
+                          <div className="pt-2 border-t border-white/5">
+                            <p className="text-xs text-gray-500 mb-2">Creation Transaction</p>
+                            <a
+                              href={getExplorerUrl(message.redeemLink.txHash, chainId)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 text-xs text-[#00EF8B] hover:text-[#00D9FF] transition-colors"
+                            >
+                              <span className="font-mono">{message.redeemLink.txHash.slice(0, 10)}...{message.redeemLink.txHash.slice(-8)}</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        )}
 
                         {/* Share Options - Always visible */}
                         <div className="pt-3 border-t border-white/5">

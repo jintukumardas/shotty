@@ -108,9 +108,10 @@ export class LendingService {
 
       // Then deposit
       const tx = await contract.deposit(token, amount);
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
-      return { txHash: receipt.hash };
+      return { txHash };
     } catch (error: any) {
       console.error('Deposit error:', error);
       throw new Error(error.message || 'Failed to deposit');
@@ -125,9 +126,10 @@ export class LendingService {
       const contract = await this.getWriteContract();
 
       const tx = await contract.withdraw(token, amount);
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
-      return { txHash: receipt.hash };
+      return { txHash };
     } catch (error: any) {
       console.error('Withdraw error:', error);
       throw new Error(error.message || 'Failed to withdraw');
@@ -144,10 +146,10 @@ export class LendingService {
       const tx = await contract.borrow(token, amount, {
         value: collateral
       });
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
-      const receipt = await tx.wait();
-
-      return { txHash: receipt.hash };
+      return { txHash };
     } catch (error: any) {
       console.error('Borrow error:', error);
       throw new Error(error.message || 'Failed to borrow');
@@ -173,9 +175,10 @@ export class LendingService {
 
       // Then repay
       const tx = await contract.repay(token, amount);
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
-      return { txHash: receipt.hash };
+      return { txHash };
     } catch (error: any) {
       console.error('Repay error:', error);
       throw new Error(error.message || 'Failed to repay');
@@ -205,9 +208,10 @@ export class LendingService {
 
       // Liquidate
       const tx = await contract.liquidate(borrower, token);
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
-      return { txHash: receipt.hash };
+      return { txHash };
     } catch (error: any) {
       console.error('Liquidate error:', error);
       throw new Error(error.message || 'Failed to liquidate');

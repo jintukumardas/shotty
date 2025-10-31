@@ -118,7 +118,8 @@ export class FlowActionsService {
       }));
 
       const tx = await contract.createWorkflow(contractActions, name, allowPartialFailure);
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
       // Parse event to get workflow ID
       const event = receipt.logs.find(
@@ -133,7 +134,7 @@ export class FlowActionsService {
 
       return {
         workflowId,
-        txHash: receipt.hash
+        txHash
       };
     } catch (error: any) {
       console.error('Create workflow error:', error);
@@ -151,8 +152,8 @@ export class FlowActionsService {
       const tx = await contract.executeWorkflow(workflowId, {
         value: totalValue || '0'
       });
-
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
       return {
         workflowId,
@@ -192,8 +193,8 @@ export class FlowActionsService {
         allowPartialFailure,
         { value: totalValue || '0' }
       );
-
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
       return {
         workflowId: 0,
@@ -215,9 +216,10 @@ export class FlowActionsService {
       const contract = await this.getWriteContract();
 
       const tx = await contract.cancelWorkflow(workflowId);
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
-      return { txHash: receipt.hash };
+      return { txHash };
     } catch (error: any) {
       console.error('Cancel workflow error:', error);
       throw new Error(error.message || 'Failed to cancel workflow');
@@ -244,8 +246,8 @@ export class FlowActionsService {
         stakeData,
         { value }
       );
-
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
       // Parse event to get workflow ID
       const event = receipt.logs.find(
@@ -260,7 +262,7 @@ export class FlowActionsService {
 
       return {
         workflowId,
-        txHash: receipt.hash
+        txHash
       };
     } catch (error: any) {
       console.error('Quick swap and stake error:', error);

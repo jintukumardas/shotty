@@ -53,7 +53,7 @@ export class FlowEvmClient {
 
         console.log('Browser wallet connected');
         console.log('  Address:', address);
-        console.log('  Chain:', network.name || `Chain ${chainId}`);
+        console.log('  Chain:', this.getChainName(chainId));
       }
 
       console.log('✅ Wallet connected:', address);

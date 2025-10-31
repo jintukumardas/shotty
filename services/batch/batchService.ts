@@ -93,14 +93,14 @@ export class BatchService {
       const tx = await contract.executeBatch(contractOps, requireAllSuccess, {
         value: totalValue
       });
-
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
       return {
         success: true,
         results: [],
         failedCount: 0,
-        txHash: receipt.hash
+        txHash
       };
     } catch (error: any) {
       console.error('Batch execution error:', error);
@@ -127,12 +127,12 @@ export class BatchService {
       const tx = await contract.executeBatchSimple(targets, values, datas, {
         value: totalValue
       });
-
-      const receipt = await tx.wait();
+    const txHash = tx.hash;
+    const receipt = await tx.wait();
 
       return {
         success: true,
-        txHash: receipt.hash
+        txHash
       };
     } catch (error: any) {
       console.error('Simple batch execution error:', error);

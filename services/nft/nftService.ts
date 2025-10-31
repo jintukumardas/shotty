@@ -99,6 +99,7 @@ export class NFTService {
 
       // Execute mint transaction
       const tx = await contract.mintNFT(params.to, params.uri);
+      const txHash = tx.hash;
       const receipt = await tx.wait();
 
       // Parse the NFTMinted event to get tokenId
@@ -110,7 +111,7 @@ export class NFTService {
 
       return {
         tokenId,
-        txHash: receipt.hash,
+        txHash,
       };
     } catch (error) {
       console.error('Error minting NFT:', error);
@@ -136,6 +137,7 @@ export class NFTService {
       }
 
       const tx = await contract.batchMintNFT(to, uris);
+      const txHash = tx.hash;
       const receipt = await tx.wait();
 
       // Parse events to get all token IDs
@@ -147,7 +149,7 @@ export class NFTService {
 
       return {
         tokenIds,
-        txHash: receipt.hash,
+        txHash,
       };
     } catch (error) {
       console.error('Error batch minting NFTs:', error);
@@ -173,10 +175,11 @@ export class NFTService {
         params.to,
         params.tokenId
       );
+      const txHash = tx.hash;
       const receipt = await tx.wait();
 
       return {
-        txHash: receipt.hash,
+        txHash,
       };
     } catch (error) {
       console.error('Error transferring NFT:', error);
