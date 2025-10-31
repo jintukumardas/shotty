@@ -987,7 +987,7 @@ const ChatTransactionInterface = forwardRef<{ setInput: (text: string) => void }
       const receipt = await tx.wait();
 
       const transaction = {
-        hash: txHash || "0x",
+        hash: tx.hash || "0x",
         status: 'success' as const,
         details: {
           fromChain: swapData.fromChain,
