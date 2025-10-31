@@ -7,7 +7,7 @@ import { ethers, Contract } from 'ethers';
 
 // Contract addresses (will be set after deployment)
 const FACTORY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_ERC20_FACTORY_ADDRESS || '';
-const PUSH_CHAIN_RPC = process.env.NEXT_PUBLIC_PUSH_CHAIN_RPC || 'https://testnet.evm.nodes.onflow.org/';
+const FLOW_CHAIN_RPC = process.env.NEXT_PUBLIC_FLOW_CHAIN_RPC || 'https://testnet.evm.nodes.onflow.org/';
 
 // ABI for ERC20 Token Factory
 const FACTORY_ABI = [
@@ -66,7 +66,7 @@ export class ERC20Service {
   private readOnlyProvider: ethers.JsonRpcProvider;
 
   constructor() {
-    this.readOnlyProvider = new ethers.JsonRpcProvider(PUSH_CHAIN_RPC);
+    this.readOnlyProvider = new ethers.JsonRpcProvider(FLOW_CHAIN_RPC);
 
     // Initialize read-only factory contract
     this.factoryContract = new ethers.Contract(

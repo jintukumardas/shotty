@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 
-const PUSH_CHAIN_EXPLORER_API = 'https://evm-testnet.flowscan.io/api';
+const FLOW_CHAIN_EXPLORER_API = 'https://evm-testnet.flowscan.io/api';
 
 export interface Transaction {
   hash: string;
@@ -36,8 +36,8 @@ export class TransactionService {
   private providerUrl: string;
 
   constructor() {
-    this.explorerApiUrl = PUSH_CHAIN_EXPLORER_API;
-    this.providerUrl = process.env.NEXT_PUBLIC_PUSH_CHAIN_RPC || 'https://testnet.evm.nodes.onflow.org/';
+    this.explorerApiUrl = FLOW_CHAIN_EXPLORER_API;
+    this.providerUrl = process.env.NEXT_PUBLIC_FLOW_CHAIN_RPC || 'https://testnet.evm.nodes.onflow.org/';
   }
 
   /**

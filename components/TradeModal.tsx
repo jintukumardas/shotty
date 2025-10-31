@@ -57,8 +57,8 @@ const getTokensForChain = (chainId: number) => {
       { symbol: 'USDT', name: 'Tether', decimals: 18 },
       { symbol: 'DAI', name: 'Dai', decimals: 18 },
     ],
-    42101: [ // Push Chain Testnet
-      { symbol: 'FLOW', name: 'Push Chain', decimals: 18 },
+    545: [ // Flow EVM Testnet
+      { symbol: 'FLOW', name: 'Flow', decimals: 18 },
       { symbol: 'ETH', name: 'Ethereum', decimals: 18 },
     ],
   };
@@ -68,10 +68,10 @@ const getTokensForChain = (chainId: number) => {
 
 export default function TradeModal({ isOpen, onClose }: TradeModalProps) {
   const { address } = useWallet();
-  const PUSH_CHAIN_ID = 42101; // Push Chain Testnet
+  const FLOW_CHAIN_ID = 545; // Flow EVM Testnet
   const [fromChain, setFromChain] = useState(DEFAULT_CHAIN_ID);
-  // Default toChain to Push Chain for cross-chain bridging
-  const [toChain, setToChain] = useState(PUSH_CHAIN_ID);
+  // Default toChain to Flow EVM for cross-chain bridging
+  const [toChain, setToChain] = useState(FLOW_CHAIN_ID);
   const [fromToken, setFromToken] = useState('ETH');
   const [toToken, setToToken] = useState('USDC');
   const [amount, setAmount] = useState('');

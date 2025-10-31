@@ -8,7 +8,7 @@ const ESCROW_ABI = [
 ];
 
 const ESCROW_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_ESCROW_CONTRACT_ADDRESS;
-const PUSH_CHAIN_RPC = process.env.NEXT_PUBLIC_PUSH_CHAIN_RPC;
+const FLOW_CHAIN_RPC = process.env.NEXT_PUBLIC_FLOW_CHAIN_RPC;
 
 export async function GET(
   req: NextRequest,
@@ -21,15 +21,15 @@ export async function GET(
       return NextResponse.json({ error: 'Link ID required' }, { status: 400 });
     }
 
-    if (!ESCROW_CONTRACT_ADDRESS || !PUSH_CHAIN_RPC) {
+    if (!ESCROW_CONTRACT_ADDRESS || !FLOW_CHAIN_RPC) {
       return NextResponse.json(
         { error: 'Configuration error: missing contract address or RPC' },
         { status: 500 }
       );
     }
 
-    // Connect to Push Chain and fetch details from contract
-    const provider = new ethers.JsonRpcProvider(PUSH_CHAIN_RPC);
+    // Connect to Flow EVM and fetch details from contract
+    const provider = new ethers.JsonRpcProvider(FLOW_CHAIN_RPC);
     const contract = new ethers.Contract(ESCROW_CONTRACT_ADDRESS, ESCROW_ABI, provider);
 
     // Fetch link details from contract
@@ -43,7 +43,7 @@ export async function GET(
     return NextResponse.json({
       creator,
       amount: ethers.formatEther(amount),
-      token: 'ETH', // Native token on Push Chain
+      token: 'FLOW', // Native token on Flow EVM
       redeemed,
       createdAt: Number(createdAt),
       expiresAt: expiresAt > 0 ? Number(expiresAt) * 1000 : null, // Convert to milliseconds

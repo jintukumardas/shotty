@@ -137,7 +137,7 @@ export class StrategyExecutor {
             toToken: config.dcaTargetToken,
             fromAmount: config.dcaAmount,
             toAmount: quote.toAmount,
-            chain: 'PUSH_CHAIN',
+            chain: 'FLOW_EVM',
           },
         });
       }

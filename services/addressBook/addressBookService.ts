@@ -8,7 +8,7 @@ import { AddressBook } from '../../typechain-types/contracts/AddressBook';
 import { AddressBook__factory } from '../../typechain-types/factories/contracts/AddressBook__factory';
 
 const ADDRESSBOOK_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_ADDRESSBOOK_CONTRACT_ADDRESS;
-const RPC_URL = process.env.NEXT_PUBLIC_PUSH_CHAIN_RPC;
+const RPC_URL = process.env.NEXT_PUBLIC_FLOW_CHAIN_RPC;
 
 export interface Contact {
   name: string;
