@@ -2,6 +2,8 @@
 
 <div align="center">
 
+<img src="./public/icon.png" alt="Shotty Logo" width="200" />
+
 ![Flow Network](https://img.shields.io/badge/Flow%20Network-EVM%20Testnet-00EF8B)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
@@ -11,7 +13,7 @@
 
 *Transform complex blockchain operations into simple conversations*
 
-[🎮 Try It Now](https://shotty.vercel.app/dashboard)
+[🎮 Try It Now](https://shotty-beta.vercel.app/dashboard)
 
 </div>
 
@@ -29,8 +31,9 @@
 - 📊 **Track transactions** and view history
 - 📱 **Generate QR codes** for wallet addresses
 - 🪙 **Create ERC20 tokens** with custom parameters
+- 🌉 **Bridge tokens** across multiple blockchain networks
 
-**Powered by:** AI + Flow Network EVM
+**Powered by:** AI + Flow Network EVM + DeFi Protocols
 
 ---
 
@@ -53,6 +56,7 @@
 | **🪙 ERC20 Token Factory** | Create custom ERC20 tokens with your parameters | [`0xbb3E...26a0`](https://evm-testnet.flowscan.io/address/0xbb3E64F2D72ac754c7C98eC43b549F0F78bd26a0) | ✅ Live |
 | **🔄 Token Ownership Transfer** | Transfer ownership of created ERC20 tokens | Same as Token Factory | ✅ Live |
 | **📋 Token Portfolio** | View all ERC20 tokens you've created | Same as Token Factory | ✅ Live |
+| **🌉 Cross-Chain Bridge** | Bridge tokens across 20+ blockchain networks | DeFi Aggregator (Mainnet Only) | ✅ Live |
 
 ---
 
@@ -90,6 +94,9 @@
 | **🪙 ERC20 Tokens** | `"Create a token called MyToken with symbol MTK and 1000000 supply"` | Deploys new ERC20 token |
 | | `"Transfer ownership of 0x123... to 0x456..."` | Transfers token ownership |
 | | `"Show my tokens"` | Lists all created ERC20 tokens |
+| **🌉 Cross-Chain Bridge** | `"Bridge tokens between networks"` | Opens bridge modal to transfer tokens across chains |
+| | `"Bridge 10 FLOW to Ethereum"` | Opens modal with Flow to Ethereum pre-configured |
+| | `"Swap tokens across chains"` | Opens cross-chain bridge interface |
 
 ---
 
@@ -105,12 +112,12 @@
                            ↓
 ┌─────────────────────────────────────────────────────────┐
 │                      AI Layer                           │
-│        OpenAI • Intent Parser • NLP               │
+│        OpenAI • Intent Parser • NLP                     │
 └─────────────────────────────────────────────────────────┘
                            ↓
 ┌─────────────────────────────────────────────────────────┐
 │                  Blockchain Layer                       │
-│      Flow Network EVM • Ethers.js • Viem                │
+│      Flow Network EVM • Ethers.js • Viem  • DiFi        │
 └─────────────────────────────────────────────────────────┘
                            ↓
 ┌─────────────────────────────────────────────────────────┐
@@ -266,7 +273,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - 🐛 **Report Issues**: [GitHub Issues](https://github.com/jintukumardas/shotty/issues)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/jintukumardas/shotty/discussions)
 - 📧 **Email**: jintudas098@gmail.com
-- 🐦 **Twitter**: [@jintukumardas](https://x.com/jintuisbusy)
+- 🐦 **Twitter**: [@jintuisbusy](https://x.com/jintuisbusy)
 
 ---
 

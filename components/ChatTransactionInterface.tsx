@@ -10,6 +10,7 @@ import { handleChatAction } from '@/services/chat/actionHandlers';
 import MintNFTModal from './MintNFTModal';
 import QRCodeModal from './QRCodeModal';
 import CreateTokenModal from './CreateTokenModal';
+import SwapModal from './SwapModal';
 import FlowIcon from './FlowIcon';
 import { uploadNFTWithImage, createNFTMetadata, uploadMetadata } from '@/services/nft/nftService';
 import { getDomainService } from '@/services/domains/domainService';
@@ -71,6 +72,17 @@ interface SuggestionCard {
 
 export default function ChatTransactionInterface() {
   const { address, isConnected, chainId, flowEvmClient, connectWallet: connectWalletHook } = useWallet();
+
+  // Generate a random user avatar based on address
+  const getUserAvatar = (address: string | null): string => {
+    if (!address) {
+      // Generate random avatar for non-connected users
+      const randomSeed = Math.random().toString(36).substring(7);
+      return `https://api.dicebear.com/7.x/avataaars/svg?seed=${randomSeed}`;
+    }
+    // Use address as seed for consistent avatar per user
+    return `https://api.dicebear.com/7.x/avataaars/svg?seed=${address}`;
+  };
 
   // Helper to get chain name from chainId
   const getChainName = (chainId: number | null): string => {
@@ -181,6 +193,13 @@ export default function ChatTransactionInterface() {
       description: 'Deploy your own token',
       example: 'Create a token called MyToken with symbol MTK and 1000000 supply',
       gradient: 'from-pink-500 to-rose-500'
+    },
+    {
+      icon: <ArrowRight className="w-5 h-5" />,
+      title: 'Cross-Chain Bridge',
+      description: 'Bridge tokens across chains',
+      example: 'Bridge tokens between networks',
+      gradient: 'from-purple-500 to-blue-500'
     }
   ];
 
@@ -202,6 +221,7 @@ export default function ChatTransactionInterface() {
   const [qrLabel, setQrLabel] = useState('');
   const [showCreateTokenModal, setShowCreateTokenModal] = useState(false);
   const [tokenModalData, setTokenModalData] = useState<any>(null);
+  const [showSwapModal, setShowSwapModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -329,6 +349,11 @@ export default function ChatTransactionInterface() {
         setTokenModalData(data.intent.erc20Data);
         setShowCreateTokenModal(true);
       }
+      // Handle swap actions with modal
+      else if (data.intent && (data.intent.action === 'get_swap_quote' || data.intent.action === 'execute_swap')) {
+        console.log('🔄 Showing cross-chain bridge modal');
+        setShowSwapModal(true);
+      }
       // Show confirmation modal if transaction requires confirmation
       else if (data.intent && data.intent.requiresConfirmation) {
         console.log('✅ Checking if ready for confirmation');
@@ -364,8 +389,8 @@ export default function ChatTransactionInterface() {
           });
         }
       } else if (data.intent && data.intent.action && data.intent.action !== 'other') {
-        // Execute immediately if no confirmation required (like check_balance, query_nfts, resolve_domain, query_transactions, view_contacts, find_contact, query_erc20_tokens, get_token_info)
-        const noConfirmActions = ['check_balance', 'query_nfts', 'resolve_domain', 'check_domain_availability', 'query_domains', 'query_transactions', 'view_contacts', 'find_contact', 'query_erc20_tokens', 'get_token_info'];
+        // Execute immediately if no confirmation required (like check_balance, query_nfts, resolve_domain, query_transactions, view_contacts, find_contact, query_erc20_tokens, get_token_info, get_swap_quote, get_swap_status, get_supported_chains, get_chain_tokens)
+        const noConfirmActions = ['check_balance', 'query_nfts', 'resolve_domain', 'check_domain_availability', 'query_domains', 'query_transactions', 'view_contacts', 'find_contact', 'query_erc20_tokens', 'get_token_info', 'get_swap_quote', 'get_swap_status', 'get_supported_chains', 'get_chain_tokens'];
         if (noConfirmActions.includes(data.intent.action)) {
           console.log('⚡ Executing immediately without confirmation');
           await executeIntent(data.intent);
@@ -576,7 +601,12 @@ export default function ChatTransactionInterface() {
         case 'transfer_erc20_ownership':
         case 'query_erc20_tokens':
         case 'get_token_info':
-          // Handle NFT, domain, transaction query, contact, and ERC20 actions
+        case 'get_swap_quote':
+        case 'execute_swap':
+        case 'get_swap_status':
+        case 'get_supported_chains':
+        case 'get_chain_tokens':
+          // Handle NFT, domain, transaction query, contact, ERC20, and LiFi swap actions
           statusMessage = `Processing ${intent.action.replace(/_/g, ' ')}...`;
           addStatusMessage(statusMessage, 'pending');
 
@@ -776,6 +806,8 @@ export default function ChatTransactionInterface() {
         const ownershipTokenAddr = intent.erc20Data?.contractAddress;
         const shortOwnershipAddr = ownershipTokenAddr ? `${ownershipTokenAddr.slice(0, 6)}...${ownershipTokenAddr.slice(-4)}` : 'token';
         return `Transfer ownership of ${shortOwnershipAddr} to ${intent.erc20Data?.newOwner}`;
+      case 'execute_swap':
+        return `Bridge ${intent.swapData?.amount} ${intent.swapData?.fromToken} from ${intent.swapData?.fromChain} to ${intent.swapData?.toChain}`;
       default:
         return 'Execute transaction';
     }
@@ -848,6 +880,106 @@ export default function ChatTransactionInterface() {
         `❌ Failed to mint NFT: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'error'
       );
+      throw error;
+    }
+  };
+
+  const handleSwap = async (swapData: {
+    fromChain: string;
+    toChain: string;
+    fromToken: string;
+    toToken: string;
+    amount: string;
+    quote: any;
+  }) => {
+    if (!window.ethereum) {
+      addStatusMessage('❌ No wallet found. Please install MetaMask.', 'error');
+      throw new Error('No wallet found');
+    }
+
+    try {
+      addStatusMessage('Preparing cross-chain bridge...', 'pending');
+
+      const { quote } = swapData;
+
+      // Check if we have transaction request data
+      if (!quote.transactionRequest) {
+        throw new Error('Invalid quote: missing transaction request');
+      }
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+
+      // Check if approval is needed (for ERC20 tokens)
+      const isNativeToken = quote.action?.fromToken?.address === '0x0000000000000000000000000000000000000000';
+
+      if (!isNativeToken && quote.estimate?.approvalAddress) {
+        addStatusMessage('Checking token approval...', 'pending');
+
+        const tokenContract = new ethers.Contract(
+          quote.action.fromToken.address,
+          ['function allowance(address owner, address spender) view returns (uint256)', 'function approve(address spender, uint256 amount) returns (bool)'],
+          signer
+        );
+
+        const allowance = await tokenContract.allowance(address, quote.estimate.approvalAddress);
+        const requiredAmount = BigInt(quote.estimate.fromAmount);
+
+        if (allowance < requiredAmount) {
+          addStatusMessage('Approving tokens...', 'pending');
+
+          const approveTx = await tokenContract.approve(
+            quote.estimate.approvalAddress,
+            requiredAmount
+          );
+
+          addStatusMessage('Waiting for approval confirmation...', 'pending');
+          await approveTx.wait();
+          addStatusMessage('✅ Tokens approved', 'success');
+        }
+      }
+
+      // Execute the swap transaction
+      addStatusMessage('Executing cross-chain bridge...', 'pending');
+
+      const tx = await signer.sendTransaction({
+        to: quote.transactionRequest.to,
+        data: quote.transactionRequest.data,
+        value: quote.transactionRequest.value || '0',
+        gasLimit: quote.transactionRequest.gasLimit,
+      });
+
+      addStatusMessage('Waiting for transaction confirmation...', 'pending');
+      const receipt = await tx.wait();
+
+      const transaction = {
+        hash: receipt?.hash || "0x",
+        status: 'success' as const,
+        details: {
+          fromChain: swapData.fromChain,
+          toChain: swapData.toChain,
+          fromToken: swapData.fromToken,
+          toToken: swapData.toToken,
+          amount: swapData.amount,
+          bridge: quote.tool,
+        },
+      };
+
+      addTransactionMessage(
+        `✅ Bridge transaction submitted!\n\nBridging ${swapData.amount} ${swapData.fromToken} from ${swapData.fromChain} to ${swapData.toChain}.\n\nBridge: ${quote.tool}\nEst. time: ~${Math.ceil(quote.estimate.executionDuration / 60)} minutes`,
+        transaction
+      );
+    } catch (error: any) {
+      console.error('Failed to execute swap:', error);
+
+      let errorMessage = 'Failed to execute bridge';
+      if (error.code === 4001) {
+        errorMessage = 'Transaction rejected by user';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      addStatusMessage(`❌ ${errorMessage}`, 'error');
       throw error;
     }
   };
@@ -984,7 +1116,7 @@ export default function ChatTransactionInterface() {
                     href={viewLine.replace('View:', '').trim()}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-[#DD44B9] hover:text-[#FC519F] flex items-center gap-1 transition-colors"
+                    className="text-xs text-[#DD44B9] hover:text-[#00D9FF] flex items-center gap-1 transition-colors"
                   >
                     <ExternalLink className="w-3 h-3" />
                     View on Explorer
@@ -1105,7 +1237,7 @@ export default function ChatTransactionInterface() {
   return (
     <div className="flex flex-col h-full bg-transparent">
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-[#2A2A2A]/50 backdrop-blur-xl bg-[#1E1E1E]/60">
+      <div className="flex items-center justify-between p-4 border-b border-[#2A2A2A]/50 backdrop-blur-xl bg-[#1E1E1E]/60">
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="absolute -inset-1 bg-gradient-to-r from-[#00EF8B] to-[#00D9FF] rounded-lg blur-sm opacity-75"></div>
@@ -1148,22 +1280,34 @@ export default function ChatTransactionInterface() {
       </div>
 
       {/* Messages */}
-      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin scrollbar-thumb-[#2A2A2A] scrollbar-track-transparent">
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-thin scrollbar-thumb-[#2A2A2A] scrollbar-track-transparent" style={{ minHeight: '500px' }}>
         {messages.map((message) => (
           <div key={message.id}>
             <div
               className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
             >
               {/* Avatar */}
-              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center overflow-hidden ${
                 message.role === 'user'
-                  ? 'bg-gradient-to-br from-[#DD44B9] to-[#FC519F]'
+                  ? 'bg-gradient-to-br from-[#DD44B9] to-[#00D9FF]'
                   : message.role === 'system'
                   ? 'bg-red-500/20 border border-red-500/30'
                   : 'bg-[#0D0D0D] border border-[#00EF8B]/30'
               }`}>
                 {message.role === 'user' ? (
-                  <User className="w-4 h-4 text-white" />
+                  <img
+                    src={getUserAvatar(address)}
+                    alt="User avatar"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Fallback to icon if image fails to load
+                      (e.target as HTMLImageElement).style.display = 'none';
+                      const userIcon = document.createElement('div');
+                      userIcon.className = 'w-full h-full flex items-center justify-center';
+                      userIcon.innerHTML = '<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>';
+                      (e.target as HTMLImageElement).parentNode?.appendChild(userIcon);
+                    }}
+                  />
                 ) : message.role === 'system' ? (
                   <XCircle className="w-4 h-4 text-red-400" />
                 ) : (
@@ -1176,7 +1320,7 @@ export default function ChatTransactionInterface() {
                 <div
                   className={`rounded-2xl px-5 py-3 ${
                     message.role === 'user'
-                      ? 'bg-gradient-to-r from-[#DD44B9] to-[#FC519F] text-white'
+                      ? 'bg-gradient-to-r from-[#DD44B9] to-[#00D9FF] text-white'
                       : message.role === 'system'
                       ? 'bg-red-500/10 border border-red-500/30 text-red-300'
                       : 'bg-[#1E1E1E]/80 backdrop-blur-sm border border-[#2A2A2A]/50 text-gray-200'
@@ -1227,7 +1371,7 @@ export default function ChatTransactionInterface() {
                             href={getExplorerUrl(message.transaction.hash, chainId)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs text-[#DD44B9] hover:text-[#FC519F] transition-colors font-medium"
+                            className="inline-flex items-center gap-1.5 text-xs text-[#DD44B9] hover:text-[#00D9FF] transition-colors font-medium"
                           >
                             <ExternalLink className="w-3 h-3" />
                             <span>View on Explorer</span>
@@ -1377,7 +1521,7 @@ export default function ChatTransactionInterface() {
       </div>
 
       {/* Input */}
-      <div className="p-6 border-t border-[#2A2A2A]/50 backdrop-blur-xl bg-[#1E1E1E]/60">
+      <div className="p-4 border-t border-[#2A2A2A]/50 backdrop-blur-xl bg-[#1E1E1E]/60">
         {!isConnected ? (
           <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-2xl p-4 text-center">
             <p className="text-sm text-yellow-400 font-medium">
@@ -1409,7 +1553,7 @@ export default function ChatTransactionInterface() {
               className={`relative p-4 rounded-2xl transition-all flex-shrink-0 ${
                 !input.trim() || isProcessing
                   ? 'bg-[#2A2A2A] text-gray-600 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-[#DD44B9] to-[#FC519F] text-white hover:shadow-lg hover:shadow-[#DD44B9]/25 hover:scale-105'
+                  : 'bg-gradient-to-r from-[#DD44B9] to-[#00D9FF] text-white hover:shadow-lg hover:shadow-[#DD44B9]/25 hover:scale-105'
               }`}
             >
               <Send className="w-5 h-5" />
@@ -1450,6 +1594,7 @@ export default function ChatTransactionInterface() {
                   {pendingConfirmation.intent.action === 'add_contact' && '➕ Add Contact'}
                   {pendingConfirmation.intent.action === 'update_contact' && '✏️ Update Contact'}
                   {pendingConfirmation.intent.action === 'remove_contact' && '➖ Remove Contact'}
+                  {pendingConfirmation.intent.action === 'execute_swap' && '🔄 Execute Cross-Chain Bridge'}
                 </span>
               </div>
 
@@ -1544,6 +1689,14 @@ export default function ChatTransactionInterface() {
           };
           setMessages((prev) => [...prev, successMessage]);
         }}
+      />
+
+      {/* Cross-Chain Swap Modal */}
+      <SwapModal
+        isOpen={showSwapModal}
+        onClose={() => setShowSwapModal(false)}
+        onSwap={handleSwap}
+        userAddress={address!}
       />
     </div>
   );

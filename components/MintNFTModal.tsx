@@ -119,25 +119,26 @@ export default function MintNFTModal({ isOpen, onClose, onMint }: MintNFTModalPr
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-2xl my-8 flex flex-col bg-[#1A1A1A] rounded-2xl border border-[#2A2A2A] shadow-2xl">
-        {/* Header */}
-        <div className="flex-shrink-0 bg-[#1A1A1A] border-b border-[#2A2A2A] p-6 flex items-center justify-between rounded-t-2xl sticky top-0 z-10">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+      <div className="relative w-full max-w-2xl max-h-[85vh] flex flex-col bg-[#1A1A1A] rounded-2xl border border-[#2A2A2A] shadow-2xl">
+        {/* Header - Fixed */}
+        <div className="flex-shrink-0 bg-[#1A1A1A] border-b border-[#2A2A2A] p-4 flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-white">Mint NFT</h2>
-            <p className="text-sm text-gray-400 mt-1">Create your digital collectible</p>
+            <h2 className="text-xl font-bold text-white">Mint NFT</h2>
+            <p className="text-xs text-gray-400 mt-1">Create your digital collectible</p>
           </div>
           <button
             onClick={handleClose}
             disabled={isMinting}
             className="text-gray-400 hover:text-white transition-colors disabled:opacity-50"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Form - Scrollable */}
-        <form onSubmit={handleSubmit} className="flex-1 p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto min-h-0">
+          <form onSubmit={handleSubmit} className="p-4 space-y-4">
           {/* Image Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -266,10 +267,11 @@ export default function MintNFTModal({ isOpen, onClose, onMint }: MintNFTModalPr
               </div>
             )}
           </div>
-        </form>
+          </form>
+        </div>
 
         {/* Action Buttons - Fixed at bottom */}
-        <div className="flex-shrink-0 border-t border-[#2A2A2A] p-6 bg-[#1A1A1A] rounded-b-2xl sticky bottom-0">
+        <div className="flex-shrink-0 border-t border-[#2A2A2A] p-4 bg-[#1A1A1A]">
           <div className="flex gap-3">
             <button
               type="button"
@@ -282,7 +284,7 @@ export default function MintNFTModal({ isOpen, onClose, onMint }: MintNFTModalPr
             <button
               onClick={handleSubmit}
               disabled={isMinting || !name.trim() || !description.trim()}
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-[#DD44B9] to-[#FC519F] text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-[#DD44B9] to-[#00D9FF] text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isMinting ? (
                 <>

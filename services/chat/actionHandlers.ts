@@ -8,6 +8,7 @@ import { getNFTService, uploadMetadata, createNFTMetadata } from '../nft/nftServ
 import { getDomainService, isValidDomainName, validateDomainName, getChainName } from '../domains/domainService';
 import { getTransactionService } from '../transactions/transactionService';
 import { getAddressBookService } from '../addressBook/addressBookService';
+import { getLiFiService, getChainId } from '../lifi/lifiService';
 
 export interface ActionResult {
   success: boolean;
@@ -1296,6 +1297,187 @@ export async function handleGetTokenInfo(
 }
 
 /**
+ * Handle get swap quote action - DeFi cross-chain bridge
+ */
+export async function handleGetSwapQuote(
+  intent: any,
+  userAddress: string
+): Promise<ActionResult> {
+  try {
+    const lifiService = getLiFiService();
+    const { swapData } = intent;
+
+    if (!swapData?.fromChain || !swapData?.toChain || !swapData?.fromToken || !swapData?.toToken || !swapData?.amount) {
+      return {
+        success: false,
+        message: 'Please provide all swap details:\n• Source chain (e.g., "ethereum", "polygon")\n• Destination chain\n• Source token address\n• Destination token address\n• Amount to swap\n\nExample: "Swap 1 USDC from Ethereum to Polygon"',
+        error: 'Missing swap parameters',
+      };
+    }
+
+    // Convert chain names to chain IDs
+    const fromChainId = getChainId(swapData.fromChain);
+    const toChainId = getChainId(swapData.toChain);
+
+    // Get quote from LiFi
+    const quote = await lifiService.getQuote({
+      fromChain: fromChainId,
+      toChain: toChainId,
+      fromToken: swapData.fromToken,
+      toToken: swapData.toToken,
+      fromAmount: swapData.amount,
+      fromAddress: userAddress,
+    });
+
+    // Format the quote information
+    const fromAmount = ethers.formatUnits(quote.estimate.fromAmount, 18);
+    const toAmount = ethers.formatUnits(quote.estimate.toAmount, 18);
+    const toAmountMin = ethers.formatUnits(quote.estimate.toAmountMin, 18);
+    const executionTime = Math.ceil(quote.estimate.executionDuration / 60); // Convert to minutes
+
+    return {
+      success: true,
+      message: `✨ **Swap Quote**\n\n**Route**: ${swapData.fromChain} → ${swapData.toChain}\n**You send**: ${fromAmount} ${swapData.fromToken}\n**You receive**: ~${toAmount} ${swapData.toToken}\n**Minimum received**: ${toAmountMin} ${swapData.toToken}\n**Bridge**: ${quote.tool}\n**Est. time**: ~${executionTime} min\n\nReady to proceed?`,
+      data: {
+        quote,
+        fromChain: swapData.fromChain,
+        toChain: swapData.toChain,
+        fromAmount,
+        toAmount,
+        toAmountMin,
+        executionTime,
+        tool: quote.tool,
+      },
+    };
+  } catch (error) {
+    console.error('Error getting swap quote:', error);
+    return {
+      success: false,
+      message: 'Failed to get swap quote. Please check your parameters and try again.',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Handle execute swap action - DeFi cross-chain bridge
+ */
+export async function handleExecuteSwap(
+  intent: any,
+  userAddress: string
+): Promise<ActionResult> {
+  try {
+    const { swapData } = intent;
+
+    if (!swapData?.quote) {
+      return {
+        success: false,
+        message: 'No quote found. Please get a quote first before executing the bridge.',
+        error: 'Missing quote',
+      };
+    }
+
+    // Note: The actual execution would require wallet interaction on the client side
+    // This handler prepares the transaction data
+    return {
+      success: true,
+      message: 'Preparing bridge transaction...',
+      data: {
+        quote: swapData.quote,
+        requiresWalletSignature: true,
+      },
+    };
+  } catch (error) {
+    console.error('Error executing swap:', error);
+    return {
+      success: false,
+      message: 'Failed to execute bridge',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Handle get swap status action - DeFi cross-chain bridge
+ */
+export async function handleGetSwapStatus(
+  intent: any
+): Promise<ActionResult> {
+  try {
+    const lifiService = getLiFiService();
+    const { swapData } = intent;
+
+    if (!swapData?.txHash || !swapData?.bridge || !swapData?.fromChain || !swapData?.toChain) {
+      return {
+        success: false,
+        message: 'Please provide transaction hash, bridge name, source chain, and destination chain',
+        error: 'Missing status parameters',
+      };
+    }
+
+    const status = await lifiService.getStatus({
+      txHash: swapData.txHash,
+      bridge: swapData.bridge,
+      fromChain: swapData.fromChain,
+      toChain: swapData.toChain,
+    });
+
+    // Format status message
+    let statusMessage = '';
+    switch (status.status) {
+      case 'DONE':
+        statusMessage = '✅ **Swap Completed**\n\nYour tokens have been successfully bridged!';
+        break;
+      case 'PENDING':
+        statusMessage = '⏳ **Swap In Progress**\n\nYour transaction is being processed...';
+        break;
+      case 'FAILED':
+        statusMessage = '❌ **Swap Failed**\n\nThe transaction could not be completed.';
+        break;
+      default:
+        statusMessage = `📊 **Status**: ${status.status}`;
+    }
+
+    return {
+      success: true,
+      message: statusMessage,
+      data: status,
+    };
+  } catch (error) {
+    console.error('Error getting swap status:', error);
+    return {
+      success: false,
+      message: 'Failed to get swap status',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Handle get supported chains action - DeFi networks
+ */
+export async function handleGetSupportedChains(): Promise<ActionResult> {
+  return {
+    success: true,
+    message: `🌐 **DeFi Cross-Chain Bridge**\n\nTo view available networks and bridge tokens:\n\n1. Ensure you're on **Flow EVM Mainnet** (Chain ID: 747)\n2. Say "Bridge tokens" to open the bridge interface\n3. Select networks and tokens from the dropdown menus\n\n💡 **Note**: DeFi bridging is only available on mainnet networks.`,
+    data: { requiresMainnet: true },
+  };
+}
+
+/**
+ * Handle get chain tokens action - DeFi token list
+ */
+export async function handleGetChainTokens(
+  intent: any
+): Promise<ActionResult> {
+  return {
+    success: true,
+    message: `💰 **Available Tokens**\n\nTo view and select tokens for bridging:\n\n1. Ensure you're on **Flow EVM Mainnet** (Chain ID: 747)\n2. Say "Bridge tokens" to open the bridge interface\n3. Select your desired network to see available tokens\n\n💡 **Note**: All popular tokens (USDC, ETH, DAI, etc.) are available in the bridge interface with live pricing.`,
+    data: { requiresMainnet: true },
+  };
+}
+
+/**
  * Main action handler dispatcher
  */
 export async function handleChatAction(
@@ -1369,6 +1551,21 @@ export async function handleChatAction(
 
     case 'get_token_info':
       return handleGetTokenInfo(intent, userAddress);
+
+    case 'get_swap_quote':
+      return handleGetSwapQuote(intent, userAddress);
+
+    case 'execute_swap':
+      return handleExecuteSwap(intent, userAddress);
+
+    case 'get_swap_status':
+      return handleGetSwapStatus(intent);
+
+    case 'get_supported_chains':
+      return handleGetSupportedChains();
+
+    case 'get_chain_tokens':
+      return handleGetChainTokens(intent);
 
     default:
       return {

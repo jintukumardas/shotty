@@ -387,7 +387,7 @@ export default function StrategyModal({ isOpen, onClose, onSuccess }: StrategyMo
                   type="button"
                   onClick={handleCreateStrategy}
                   disabled={creating}
-                  className="flex-1 px-4 py-3 bg-gradient-to-r from-[#DD44B9] to-[#FC519F] hover:opacity-90 rounded-lg text-white font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-3 bg-gradient-to-r from-[#DD44B9] to-[#00D9FF] hover:opacity-90 rounded-lg text-white font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {creating ? (
                     <>

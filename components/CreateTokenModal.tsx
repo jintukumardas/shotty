@@ -88,22 +88,25 @@ export default function CreateTokenModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-lg w-full p-6">
-        <div className="flex justify-between items-center mb-6">
+      <div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[85vh] flex flex-col">
+        {/* Header - Fixed */}
+        <div className="flex-shrink-0 flex justify-between items-center p-4 border-b border-gray-200">
           <div className="flex items-center gap-2">
-            <Coins className="w-6 h-6 text-purple-600" />
-            <h2 className="text-2xl font-bold text-gray-900">Create ERC20 Token</h2>
+            <Coins className="w-5 h-5 text-purple-600" />
+            <h2 className="text-xl font-bold text-gray-900">Create ERC20 Token</h2>
           </div>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 transition-colors"
             disabled={isCreating}
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Form - Scrollable */}
+        <div className="flex-1 overflow-y-auto p-4 min-h-0">
+          <form onSubmit={handleSubmit} className="space-y-3">
           {/* Token Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -210,9 +213,21 @@ export default function CreateTokenModal({
               </p>
             </div>
           </div>
+          </form>
+        </div>
 
-          {/* Buttons */}
-          <div className="flex gap-3 pt-4">
+        {/* Action Buttons - Fixed at bottom */}
+        <div className="flex-shrink-0 border-t border-gray-200 p-4 bg-white">
+          {/* Warning */}
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
+            <p className="text-xs text-yellow-800">
+              <strong>Note:</strong> Creating a token will deploy a new smart contract on the blockchain.
+              Make sure all details are correct as they cannot be changed after deployment. You will be the
+              owner of this token and can mint additional tokens or transfer ownership later.
+            </p>
+          </div>
+
+          <div className="flex gap-3">
             <button
               type="button"
               onClick={onClose}
@@ -222,7 +237,7 @@ export default function CreateTokenModal({
               Cancel
             </button>
             <button
-              type="submit"
+              onClick={handleSubmit}
               className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-lg transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               disabled={isCreating}
             >
@@ -239,16 +254,7 @@ export default function CreateTokenModal({
               )}
             </button>
           </div>
-
-          {/* Warning */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-            <p className="text-xs text-yellow-800">
-              <strong>Note:</strong> Creating a token will deploy a new smart contract on the blockchain.
-              Make sure all details are correct as they cannot be changed after deployment. You will be the
-              owner of this token and can mint additional tokens or transfer ownership later.
-            </p>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   );

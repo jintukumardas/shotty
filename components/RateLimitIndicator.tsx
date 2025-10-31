@@ -139,7 +139,7 @@ export default function RateLimitIndicator({ address }: RateLimitIndicatorProps)
                 ? 'bg-red-500'
                 : isLow
                 ? 'bg-yellow-500'
-                : 'bg-gradient-to-r from-[#DD44B9] to-[#FC519F]'
+                : 'bg-gradient-to-r from-[#DD44B9] to-[#00D9FF]'
             }`}
             style={{ width: `${percentage}%` }}
           />

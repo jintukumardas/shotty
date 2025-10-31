@@ -24,7 +24,7 @@ export default function ChatPage() {
               <ArrowLeft className="w-5 h-5" />
               <span>Back to Dashboard</span>
             </Link>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-[#DD44B9] to-[#FC519F] bg-clip-text text-transparent">
+            <h1 className="text-xl font-bold bg-gradient-to-r from-[#DD44B9] to-[#00D9FF] bg-clip-text text-transparent">
               AI Transaction Assistant
             </h1>
             <div className="w-32"></div> {/* Spacer for centering */}

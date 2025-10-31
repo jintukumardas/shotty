@@ -263,6 +263,7 @@ export function getLiFiService(): LiFiService {
 }
 
 // Helper function to convert chain names to chain IDs
+// Note: DeFi services only support mainnet chains
 export function getChainId(chainName: string): string {
   const chainMap: Record<string, string> = {
     'ethereum': '1',
@@ -277,8 +278,11 @@ export function getChainId(chainName: string): string {
     'binance': '56',
     'avalanche': '43114',
     'avax': '43114',
-    'flow': '545',
-    'flowevm': '545',
+    'flow': '747',  // Flow EVM Mainnet (default)
+    'flowevm': '747',  // Flow EVM Mainnet
+    'flow-mainnet': '747',  // Flow EVM Mainnet
+    'flowevmmainnet': '747',  // Flow EVM Mainnet
+    'flow-testnet': '545',  // Flow EVM Testnet (not supported for DeFi)
   };
 
   return chainMap[chainName.toLowerCase()] || chainName;

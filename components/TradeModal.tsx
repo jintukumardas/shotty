@@ -387,7 +387,7 @@ export default function TradeModal({ isOpen, onClose }: TradeModalProps) {
                     onClick={() => setSlippage(val)}
                     className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       slippage === val
-                        ? 'bg-gradient-to-r from-[#DD44B9] to-[#FC519F] text-white'
+                        ? 'bg-gradient-to-r from-[#DD44B9] to-[#00D9FF] text-white'
                         : 'bg-[#1E1E1E] text-gray-400 hover:bg-[#2A2A2A]'
                     }`}
                   >
@@ -427,7 +427,7 @@ export default function TradeModal({ isOpen, onClose }: TradeModalProps) {
               className={`w-full py-4 rounded-xl font-semibold text-lg transition-all ${
                 !quote || isExecuting || !address || isLoadingQuote || !!error
                   ? 'bg-[#2A2A2A] text-gray-500 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-[#DD44B9] to-[#FC519F] text-white hover:opacity-90'
+                  : 'bg-gradient-to-r from-[#DD44B9] to-[#00D9FF] text-white hover:opacity-90'
               }`}
             >
               {isExecuting ? (
