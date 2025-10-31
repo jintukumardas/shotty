@@ -8,7 +8,15 @@
     "start": "next start",
     "compile": "hardhat compile",
     "deploy": "hardhat run scripts/deploy.js --network flowEvmTestnet",
-    "deploy:local": "hardhat run scripts/deploy.js --network localhost"
+    "deploy:local": "hardhat run scripts/deploy.js --network localhost",
+    "deploy:new": "hardhat run scripts/deployNewFeatures.js --network flowEvmTestnet",
+    "test": "hardhat test",
+    "test:new": "node scripts/testNewFeatures.js",
+    "test:batch": "hardhat test test/BatchTransactions.test.ts",
+    "test:scheduled": "hardhat test test/ScheduledTransactions.test.ts",
+    "test:flow-actions": "hardhat test test/FlowActions.test.ts",
+    "test:lending": "hardhat test test/LendingProtocol.test.ts",
+    "test:all": "hardhat test test/*.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

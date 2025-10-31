@@ -28,6 +28,21 @@ export interface TransactionIntent {
     | 'transfer_erc20_ownership'
     | 'query_erc20_tokens'
     | 'get_token_info'
+    | 'batch_transactions'
+    | 'view_batch_stats'
+    | 'execute_batch_send'
+    | 'schedule_transaction'
+    | 'view_scheduled_transactions'
+    | 'cancel_scheduled_transaction'
+    | 'execute_scheduled_transaction'
+    | 'create_workflow'
+    | 'execute_workflow'
+    | 'view_workflows'
+    | 'lend_tokens'
+    | 'borrow_tokens'
+    | 'repay_loan'
+    | 'withdraw_deposit'
+    | 'view_lending_position'
     | 'other';
   amount: number | null;
   token: string | null;
@@ -73,6 +88,46 @@ export interface TransactionIntent {
     contractAddress?: string;
     newOwner?: string;
     amount?: number | null;
+  };
+  // Batch transaction specific fields
+  batchData?: {
+    type?: string;
+    operations?: Array<{
+      target: string;
+      value: string;
+      data: string;
+      description?: string;
+    }>;
+    recipients?: string[];
+    amountPerRecipient?: number;
+    token?: string;
+    [key: string]: any;
+  };
+  // Scheduled transaction specific fields
+  scheduledData?: {
+    scheduleId?: number;
+    executeAfter?: number;
+    executeWindow?: number;
+    description?: string;
+  };
+  // Workflow specific fields
+  workflowData?: {
+    workflowId?: number;
+    name?: string;
+    actions?: Array<{
+      actionType: number;
+      target: string;
+      data: string;
+      value: string;
+      description: string;
+    }>;
+  };
+  // Lending specific fields
+  lendingData?: {
+    depositAmount?: number;
+    borrowAmount?: number;
+    collateralAmount?: number;
+    tokenAddress?: string;
   };
 }
 
@@ -688,6 +743,237 @@ export function parseTransactionIntent(message: string, userAddress: string): Pa
         chain: null,
         requiresConfirmation: false,
         erc20Data: {},
+      },
+    };
+  }
+
+  // Batch Transactions pattern
+  const batchTransactionsPattern = /(?:batch|execute\s+batch|batch\s+transactions?)/i;
+  if (batchTransactionsPattern.test(message)) {
+    // Check if viewing batch stats
+    if (/(?:show|view|get|display)\s+(?:my\s+)?batch\s+stats?/i.test(message)) {
+      return {
+        response: `I'll show you your batch transaction statistics.`,
+        intent: {
+          action: 'view_batch_stats',
+          amount: null,
+          token: null,
+          recipient: null,
+          redeemLink: null,
+          chain: null,
+          requiresConfirmation: false,
+          batchData: {},
+        },
+      };
+    }
+
+    // Check for batch send with addresses
+    const batchSendPattern = /batch\s+send\s+([\d.]+)\s+(\w+)\s+to\s+\[([^\]]+)\]/i;
+    const batchSendMatch = message.match(batchSendPattern);
+
+    if (batchSendMatch) {
+      const amount = parseFloat(batchSendMatch[1]);
+      const token = batchSendMatch[2];
+      const addressesString = batchSendMatch[3];
+
+      // Extract addresses from the array string
+      const addresses = addressesString
+        .split(',')
+        .map(addr => addr.trim())
+        .filter(addr => addr.startsWith('0x'));
+
+      if (addresses.length > 0) {
+        return {
+          response: `I'll execute a batch transaction to send ${amount} ${token} to ${addresses.length} addresses.`,
+          intent: {
+            action: 'execute_batch_send',
+            amount,
+            token,
+            recipient: null,
+            redeemLink: null,
+            chain: null,
+            requiresConfirmation: true,
+            batchData: {
+              type: 'multi_send',
+              recipients: addresses,
+              amountPerRecipient: amount,
+              token
+            },
+          },
+        };
+      }
+    }
+
+    return {
+      response: `I'll help you with batch transactions.`,
+      intent: {
+        action: 'batch_transactions',
+        amount: null,
+        token: null,
+        recipient: null,
+        redeemLink: null,
+        chain: null,
+        requiresConfirmation: false,
+        batchData: {},
+      },
+    };
+  }
+
+  // Schedule Transaction pattern
+  const scheduleTransactionPattern = /(?:schedule|scheduled?\s+transaction)/i;
+  if (scheduleTransactionPattern.test(message)) {
+    // Check if viewing scheduled transactions
+    if (/(?:show|view|list|get|display)\s+(?:my\s+)?(?:scheduled?\s+)?(?:transaction|tx)s?/i.test(message)) {
+      return {
+        response: `I'll show you your scheduled transactions.`,
+        intent: {
+          action: 'view_scheduled_transactions',
+          amount: null,
+          token: null,
+          recipient: null,
+          redeemLink: null,
+          chain: null,
+          requiresConfirmation: false,
+          scheduledData: {},
+        },
+      };
+    }
+
+    return {
+      response: `I'll help you schedule a transaction.`,
+      intent: {
+        action: 'schedule_transaction',
+        amount: null,
+        token: null,
+        recipient: null,
+        redeemLink: null,
+        chain: null,
+        requiresConfirmation: false,
+        scheduledData: {},
+      },
+    };
+  }
+
+  // Workflow pattern
+  const workflowPattern = /(?:workflow|flow\s+action)/i;
+  if (workflowPattern.test(message)) {
+    // Check if viewing workflows
+    if (/(?:show|view|list|get|display)\s+(?:my\s+)?workflows?/i.test(message)) {
+      return {
+        response: `I'll show you your workflows.`,
+        intent: {
+          action: 'view_workflows',
+          amount: null,
+          token: null,
+          recipient: null,
+          redeemLink: null,
+          chain: null,
+          requiresConfirmation: false,
+          workflowData: {},
+        },
+      };
+    }
+
+    // Check if executing workflow
+    if (/(?:execute|run)/i.test(message)) {
+      return {
+        response: `I'll help you execute a workflow.`,
+        intent: {
+          action: 'execute_workflow',
+          amount: null,
+          token: null,
+          recipient: null,
+          redeemLink: null,
+          chain: null,
+          requiresConfirmation: false,
+          workflowData: {},
+        },
+      };
+    }
+
+    return {
+      response: `I'll help you create a workflow.`,
+      intent: {
+        action: 'create_workflow',
+        amount: null,
+        token: null,
+        recipient: null,
+        redeemLink: null,
+        chain: null,
+        requiresConfirmation: false,
+        workflowData: {},
+      },
+    };
+  }
+
+  // Lending pattern - Lend
+  const lendPattern = /(?:lend|deposit|supply)\s+(?:token|asset)/i;
+  if (lendPattern.test(message)) {
+    return {
+      response: `I'll help you lend tokens to earn interest.`,
+      intent: {
+        action: 'lend_tokens',
+        amount: null,
+        token: null,
+        recipient: null,
+        redeemLink: null,
+        chain: null,
+        requiresConfirmation: false,
+        lendingData: {},
+      },
+    };
+  }
+
+  // Lending pattern - Borrow
+  const borrowPattern = /(?:borrow)\s+(?:token|asset)/i;
+  if (borrowPattern.test(message)) {
+    return {
+      response: `I'll help you borrow tokens.`,
+      intent: {
+        action: 'borrow_tokens',
+        amount: null,
+        token: null,
+        recipient: null,
+        redeemLink: null,
+        chain: null,
+        requiresConfirmation: false,
+        lendingData: {},
+      },
+    };
+  }
+
+  // Lending pattern - View position
+  const lendingPositionPattern = /(?:lending|loan)\s+(?:position|status)/i;
+  if (lendingPositionPattern.test(message)) {
+    return {
+      response: `I'll show you your lending position.`,
+      intent: {
+        action: 'view_lending_position',
+        amount: null,
+        token: null,
+        recipient: null,
+        redeemLink: null,
+        chain: null,
+        requiresConfirmation: false,
+        lendingData: {},
+      },
+    };
+  }
+
+  // View lending position - alternative patterns
+  const viewLendingPattern = /(?:show|view|get|display)\s+(?:my\s+)?lending\s+(?:position|status|data)/i;
+  if (viewLendingPattern.test(message)) {
+    return {
+      response: `I'll show you your lending position.`,
+      intent: {
+        action: 'view_lending_position',
+        amount: null,
+        token: null,
+        recipient: null,
+        redeemLink: null,
+        chain: null,
+        requiresConfirmation: false,
+        lendingData: {},
       },
     };
   }

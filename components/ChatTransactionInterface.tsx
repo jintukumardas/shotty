@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Send, Loader2, CheckCircle, XCircle, Link as LinkIcon, Copy, ExternalLink, Bot, User, Sparkles, Wallet, DollarSign, Gift, ArrowRight, QrCode, Coins, Share2, MessageCircle, Mail } from 'lucide-react';
 import { ethers } from 'ethers';
 import { useWallet } from '@/services/blockchain/useWallet';
@@ -70,7 +70,7 @@ interface SuggestionCard {
   gradient: string;
 }
 
-export default function ChatTransactionInterface() {
+const ChatTransactionInterface = forwardRef<{ setInput: (text: string) => void }, {}>(function ChatTransactionInterface(props, ref) {
   const { address, isConnected, chainId, flowEvmClient, connectWallet: connectWalletHook } = useWallet();
 
   // Generate a random user avatar based on address
@@ -207,9 +207,14 @@ export default function ChatTransactionInterface() {
     {
       id: '1',
       role: 'assistant',
-      content: '👋 Welcome! I\'m Shotty, your Universal AI Butler\n\nI can help you with blockchain transactions across any chain. Choose an action below or just tell me what you need!',
+      content: '👋 Welcome! I\'m Shotty, your Universal AI Butler\n\nI can help you with blockchain transactions and other capabilities on Flow Network. Click any capability on the left or just tell me what you need!',
       timestamp: new Date(),
-      showSuggestions: true,
+    },
+    {
+      id: '2',
+      role: 'assistant',
+      content: 'Please use Flow Testnet for testing except swap and cross chain transfers (only mainnet is supported)!',
+      timestamp: new Date(),
     },
   ]);
   const [input, setInput] = useState('');
@@ -224,6 +229,18 @@ export default function ChatTransactionInterface() {
   const [showSwapModal, setShowSwapModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+  // Expose setInput method to parent components
+  useImperativeHandle(ref, () => ({
+    setInput: (text: string) => {
+      setInput(text);
+      // Auto-focus the input
+      const inputElement = document.querySelector('textarea');
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }
+  }));
 
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
@@ -390,7 +407,7 @@ export default function ChatTransactionInterface() {
         }
       } else if (data.intent && data.intent.action && data.intent.action !== 'other') {
         // Execute immediately if no confirmation required (like check_balance, query_nfts, resolve_domain, query_transactions, view_contacts, find_contact, query_erc20_tokens, get_token_info, get_swap_quote, get_swap_status, get_supported_chains, get_chain_tokens)
-        const noConfirmActions = ['check_balance', 'query_nfts', 'resolve_domain', 'check_domain_availability', 'query_domains', 'query_transactions', 'view_contacts', 'find_contact', 'query_erc20_tokens', 'get_token_info', 'get_swap_quote', 'get_swap_status', 'get_supported_chains', 'get_chain_tokens'];
+        const noConfirmActions = ['check_balance', 'query_nfts', 'resolve_domain', 'check_domain_availability', 'query_domains', 'query_transactions', 'view_contacts', 'find_contact', 'query_erc20_tokens', 'get_token_info', 'get_swap_quote', 'get_swap_status', 'get_supported_chains', 'get_chain_tokens', 'batch_transactions', 'view_batch_stats', 'schedule_transaction', 'view_scheduled_transactions', 'cancel_scheduled_transaction', 'execute_scheduled_transaction', 'create_workflow', 'execute_workflow', 'view_workflows', 'lend_tokens', 'borrow_tokens', 'repay_loan', 'withdraw_deposit', 'view_lending_position'];
         if (noConfirmActions.includes(data.intent.action)) {
           console.log('⚡ Executing immediately without confirmation');
           await executeIntent(data.intent);
@@ -606,7 +623,22 @@ export default function ChatTransactionInterface() {
         case 'get_swap_status':
         case 'get_supported_chains':
         case 'get_chain_tokens':
-          // Handle NFT, domain, transaction query, contact, ERC20, and LiFi swap actions
+        case 'batch_transactions':
+        case 'view_batch_stats':
+        case 'execute_batch_send':
+        case 'schedule_transaction':
+        case 'view_scheduled_transactions':
+        case 'cancel_scheduled_transaction':
+        case 'execute_scheduled_transaction':
+        case 'create_workflow':
+        case 'execute_workflow':
+        case 'view_workflows':
+        case 'lend_tokens':
+        case 'borrow_tokens':
+        case 'repay_loan':
+        case 'withdraw_deposit':
+        case 'view_lending_position':
+          // Handle NFT, domain, transaction query, contact, ERC20, LiFi swap, and new feature actions
           statusMessage = `Processing ${intent.action.replace(/_/g, ' ')}...`;
           addStatusMessage(statusMessage, 'pending');
 
@@ -1469,37 +1501,7 @@ export default function ChatTransactionInterface() {
               </div>
             </div>
 
-            {/* Suggestion Cards - Show after welcome message */}
-            {message.showSuggestions && (
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                {suggestions.map((suggestion, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleSuggestionClick(suggestion.example)}
-                    className="group relative text-left"
-                  >
-                    <div className={`absolute -inset-0.5 bg-gradient-to-r ${suggestion.gradient} rounded-xl blur opacity-0 group-hover:opacity-60 transition duration-300`}></div>
-                    <div className="relative bg-[#1E1E1E]/90 backdrop-blur-sm border border-[#2A2A2A]/50 rounded-xl p-4 hover:border-[#3A3A3A] transition-all">
-                      <div className="flex items-start gap-3">
-                        <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${suggestion.gradient} flex items-center justify-center flex-shrink-0`}>
-                          {suggestion.icon}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <h3 className="text-sm font-semibold text-white">{suggestion.title}</h3>
-                            <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-[#DD44B9] transition-colors" />
-                          </div>
-                          <p className="text-xs text-gray-500 mb-2">{suggestion.description}</p>
-                          <code className="text-xs text-gray-400 bg-black/30 px-2 py-1 rounded">
-                            {suggestion.example}
-                          </code>
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
+            {/* Suggestion Cards - Hidden, moved to sidebar */}
           </div>
         ))}
 
@@ -1700,4 +1702,6 @@ export default function ChatTransactionInterface() {
       />
     </div>
   );
-}
+});
+
+export default ChatTransactionInterface;

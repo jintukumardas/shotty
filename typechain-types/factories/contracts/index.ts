@@ -3,7 +3,11 @@
 /* eslint-disable */
 export * as erc20TokenFactorySol from "./ERC20TokenFactory.sol";
 export { AddressBook__factory } from "./AddressBook__factory";
+export { BatchTransactions__factory } from "./BatchTransactions__factory";
 export { DomainRegistry__factory } from "./DomainRegistry__factory";
+export { FlowActions__factory } from "./FlowActions__factory";
+export { LendingProtocol__factory } from "./LendingProtocol__factory";
 export { RedeemLinksEscrow__factory } from "./RedeemLinksEscrow__factory";
+export { ScheduledTransactions__factory } from "./ScheduledTransactions__factory";
 export { SecureStorage__factory } from "./SecureStorage__factory";
 export { UniversalNFT__factory } from "./UniversalNFT__factory";

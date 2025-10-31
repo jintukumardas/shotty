@@ -1,8 +1,8 @@
-# 🤖 Shotty - Your AI Butler for Flow Network
+# Shotty - Your AI Butler for Flow Network
 
 <div align="center">
 
-<img src="./public/icon.png" alt="Shotty Logo" width="200" />
+<img src="./public/shotty_icon.jpg" alt="Shotty Logo" width="300" />
 
 ![Flow Network](https://img.shields.io/badge/Flow%20Network-EVM%20Testnet-00EF8B)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
@@ -32,6 +32,10 @@
 - 📱 **Generate QR codes** for wallet addresses
 - 🪙 **Create ERC20 tokens** with custom parameters
 - 🌉 **Bridge tokens** across multiple blockchain networks
+- ⚡ **Batch EVM transactions** for efficient multi-operation execution
+- ⏰ **Schedule transactions** for future execution with time-locks
+- 🔄 **Flow Actions** for composable transaction workflows
+- 💰 **Lending & Borrowing** with DeFi protocols integration
 
 **Powered by:** AI + Flow Network EVM + DeFi Protocols
 
@@ -57,6 +61,10 @@
 | **🔄 Token Ownership Transfer** | Transfer ownership of created ERC20 tokens | Same as Token Factory | ✅ Live |
 | **📋 Token Portfolio** | View all ERC20 tokens you've created | Same as Token Factory | ✅ Live |
 | **🌉 Cross-Chain Bridge** | Bridge tokens across 20+ blockchain networks | DeFi Aggregator (Mainnet Only) | ✅ Live |
+| **⚡ Batch EVM Transactions** | Execute multiple EVM operations in a single transaction | [`0xC3d8...DBa3`](https://evm-testnet.flowscan.io/address/0xC3d8AfB3462f726Db9d793DefdCFC67D7E12DBa3) | ✅ Live |
+| **⏰ Scheduled Transactions** | Schedule transactions with time-locks and future execution | [`0xfF0e...53a7`](https://evm-testnet.flowscan.io/address/0xfF0e7F71a0e19E0BF037Bd90Ba30A2Ee409E53a7) | ✅ Live |
+| **🔄 Flow Actions** | Composable transaction workflows with connectors | [`0xe4ab...bA0d`](https://evm-testnet.flowscan.io/address/0xe4ab654a03826E15039913D0D0E1E4Af2117bA0d) | ✅ Live |
+| **💰 Lending & Borrowing** | Lend assets to earn interest or borrow against collateral | [`0x3b4c...bF6b`](https://evm-testnet.flowscan.io/address/0x3b4cAE62020487263Fc079312f9199a1b014BF6b) | ✅ Live |
 
 ---
 
@@ -97,6 +105,17 @@
 | **🌉 Cross-Chain Bridge** | `"Bridge tokens between networks"` | Opens bridge modal to transfer tokens across chains |
 | | `"Bridge 10 FLOW to Ethereum"` | Opens modal with Flow to Ethereum pre-configured |
 | | `"Swap tokens across chains"` | Opens cross-chain bridge interface |
+| **⚡ Batch Transactions** | `"Batch send 1 FLOW to Alice, 2 FLOW to Bob, and mint NFT"` | Executes multiple operations in single transaction |
+| | `"Batch approve token and swap for USDC"` | Approves and swaps in one transaction |
+| **⏰ Scheduled Transactions** | `"Schedule sending 5 FLOW to Alice tomorrow at 2pm"` | Creates time-locked transaction for future |
+| | `"Schedule token transfer for next Monday"` | Schedules transaction with specific date |
+| | `"Cancel scheduled transaction #42"` | Cancels pending scheduled transaction |
+| **🔄 Flow Actions** | `"Create workflow: swap tokens and stake result"` | Builds composable transaction workflow |
+| | `"Execute action: borrow, swap, and lend"` | Runs complex DeFi action sequence |
+| **💰 Lending & Borrowing** | `"Lend 100 FLOW to earn interest"` | Deposits assets into lending pool |
+| | `"Borrow 50 USDC using my FLOW as collateral"` | Takes loan against deposited collateral |
+| | `"What's my lending position?"` | Shows current loans and deposits |
+| | `"Repay my USDC loan"` | Repays borrowed amount with interest |
 
 ---
 
@@ -177,6 +196,10 @@
    NEXT_PUBLIC_ADDRESSBOOK_CONTRACT_ADDRESS=0x4354BE4A734E3DC61182F0e09Bc5B0cc264CC218
    NEXT_PUBLIC_SECURESTORAGE_CONTRACT_ADDRESS=0x42D2e14cb7d931216F0154625db3dA4F3e90525B
    NEXT_PUBLIC_TOKEN_FACTORY_CONTRACT_ADDRESS=0xbb3E64F2D72ac754c7C98eC43b549F0F78bd26a0
+   NEXT_PUBLIC_BATCH_CONTRACT_ADDRESS=0xC3d8AfB3462f726Db9d793DefdCFC67D7E12DBa3
+   NEXT_PUBLIC_SCHEDULED_CONTRACT_ADDRESS=0xfF0e7F71a0e19E0BF037Bd90Ba30A2Ee409E53a7
+   NEXT_PUBLIC_FLOW_ACTIONS_CONTRACT_ADDRESS=0xe4ab654a03826E15039913D0D0E1E4Af2117bA0d
+   NEXT_PUBLIC_LENDING_CONTRACT_ADDRESS=0x3b4cAE62020487263Fc079312f9199a1b014BF6b
    ```
 
 5. **Run development server**
@@ -238,6 +261,10 @@ Shotty: Let me help you mint an NFT! Please provide:
 | **Address Book** | `0x4354BE4A734E3DC61182F0e09Bc5B0cc264CC218` | [View →](https://evm-testnet.flowscan.io/address/0x4354BE4A734E3DC61182F0e09Bc5B0cc264CC218) | On-chain contact manager |
 | **Secure Storage** | `0x42D2e14cb7d931216F0154625db3dA4F3e90525B` | [View →](https://evm-testnet.flowscan.io/address/0x42D2e14cb7d931216F0154625db3dA4F3e90525B) | IPFS document storage |
 | **ERC20 Token Factory** | `0xbb3E64F2D72ac754c7C98eC43b549F0F78bd26a0` | [View →](https://evm-testnet.flowscan.io/address/0xbb3E64F2D72ac754c7C98eC43b549F0F78bd26a0) | Custom ERC20 token deployment |
+| **Batch Transactions** | `0xC3d8AfB3462f726Db9d793DefdCFC67D7E12DBa3` | [View →](https://evm-testnet.flowscan.io/address/0xC3d8AfB3462f726Db9d793DefdCFC67D7E12DBa3) | Multi-operation batch execution |
+| **Scheduled Transactions** | `0xfF0e7F71a0e19E0BF037Bd90Ba30A2Ee409E53a7` | [View →](https://evm-testnet.flowscan.io/address/0xfF0e7F71a0e19E0BF037Bd90Ba30A2Ee409E53a7) | Time-locked transaction scheduling |
+| **Flow Actions** | `0xe4ab654a03826E15039913D0D0E1E4Af2117bA0d` | [View →](https://evm-testnet.flowscan.io/address/0xe4ab654a03826E15039913D0D0E1E4Af2117bA0d) | Composable workflow engine |
+| **Lending Protocol** | `0x3b4cAE62020487263Fc079312f9199a1b014BF6b` | [View →](https://evm-testnet.flowscan.io/address/0x3b4cAE62020487263Fc079312f9199a1b014BF6b) | DeFi lending & borrowing |
 
 ---
 
@@ -250,7 +277,28 @@ Shotty: Let me help you mint an NFT! Please provide:
 - 🔍 **Block Explorer**: [Flow EVM Testnet Explorer](https://evm-testnet.flowscan.io)
 - 💧 **Testnet Faucet**: [Flow Testnet Faucet](https://testnet-faucet.onflow.org)
 - 🚀 **Flow Actions & Workflows**: [Forte Upgrade Overview](https://flow.com/forte)
-  
+
+### 📖 Developer Tutorials & Guides
+
+#### Cross-VM & Advanced Features
+- ⚡ **Batched EVM Transactions**: [Tutorial](https://developers.flow.com/blockchain-development-tutorials/cross-vm-apps/batched-evm-transactions)
+- ⏰ **Scheduled Transactions**: [Introduction](https://developers.flow.com/blockchain-development-tutorials/forte/scheduled-transactions/scheduled-transactions-introduction)
+
+#### Flow Actions & Composability
+- 🔄 **Flow Actions Introduction**: [Getting Started](https://developers.flow.com/blockchain-development-tutorials/forte/flow-actions/intro-to-flow-actions)
+- 🔌 **Flow Actions Connectors**: [Documentation](https://developers.flow.com/blockchain-development-tutorials/forte/flow-actions/connectors)
+- 🧩 **Basic Combinations**: [Composing Actions](https://developers.flow.com/blockchain-development-tutorials/forte/flow-actions/basic-combinations)
+- 📝 **Flow Actions Transactions**: [Transaction Guide](https://developers.flow.com/blockchain-development-tutorials/forte/flow-actions/flow-actions-transaction)
+
+#### Cadence Smart Contracts
+- 🏗️ **Building Frontend Apps**: [Frontend Integration](https://developers.flow.com/blockchain-development-tutorials/cadence/getting-started/building-a-frontend-app)
+- 🔗 **Smart Contract Interaction**: [Interaction Guide](https://developers.flow.com/blockchain-development-tutorials/cadence/getting-started/smart-contract-interaction)
+- 🎼 **Compose with Transactions**: [Transaction Composition](https://developers.flow.com/blockchain-development-tutorials/cadence/cadence-advantages/compose-with-cadence-transactions)
+- 📊 **Native Data Availability**: [Scripts Guide](https://developers.flow.com/blockchain-development-tutorials/cadence/cadence-advantages/native-data-availibility-with-cadence-scripts)
+
+#### Advanced Topics
+- 🔢 **Fixed Point Math (128-bit)**: [Math Library](https://developers.flow.com/blockchain-development-tutorials/forte/fixed-point-128-bit-math)
+
 ---
 
 ## 📄 License

@@ -6,6 +6,7 @@ import { getLiFiService, getChainId } from '@/services/lifi/lifiService';
 import type { LiFiQuote, LiFiChain, LiFiToken } from '@/services/lifi/lifiService';
 import { ethers } from 'ethers';
 import { useWallet } from '@/services/blockchain/useWallet';
+import { formatErrorMessage } from '@/utils/errorParser';
 
 interface SwapModalProps {
   isOpen: boolean;
@@ -308,7 +309,8 @@ export default function SwapModal({ isOpen, onClose, onSwap, userAddress }: Swap
       handleClose();
     } catch (error) {
       console.error('Error executing swap:', error);
-      setError(error instanceof Error ? error.message : 'Failed to execute swap');
+      const friendlyError = formatErrorMessage(error);
+      setError(friendlyError);
     } finally {
       setIsSwapping(false);
     }
@@ -373,7 +375,8 @@ export default function SwapModal({ isOpen, onClose, onSwap, userAddress }: Swap
                       await switchToFlowEvmMainnet();
                     } catch (err) {
                       console.error('Failed to switch network:', err);
-                      setError(err instanceof Error ? err.message : 'Failed to switch network');
+                      const friendlyError = formatErrorMessage(err);
+                      setError(friendlyError);
                     } finally {
                       setIsSwitchingNetwork(false);
                     }
@@ -577,9 +580,26 @@ export default function SwapModal({ isOpen, onClose, onSwap, userAddress }: Swap
 
               {/* Error Message */}
               {error && (
-                <div className="flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                <div className="relative flex items-start gap-3 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
                   <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-400">{error}</p>
+                  <div className="flex-1 min-w-0">
+                    <div
+                      className="text-sm text-red-400 whitespace-pre-wrap break-words"
+                      dangerouslySetInnerHTML={{
+                        __html: error
+                          .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-red-300">$1</strong>')
+                          .replace(/\n/g, '<br/>')
+                          .replace(/• /g, '<span class="inline-block w-2 h-2 bg-red-400 rounded-full mr-2 mb-0.5"></span>')
+                      }}
+                    />
+                  </div>
+                  <button
+                    onClick={() => setError(null)}
+                    className="flex-shrink-0 text-red-400/60 hover:text-red-400 transition-colors"
+                    aria-label="Dismiss error"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
               )}
             </>

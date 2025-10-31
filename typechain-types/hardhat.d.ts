@@ -30,6 +30,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC721Errors__factory>;
     getContractFactory(
+      name: "IERC1363",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC1363__factory>;
+    getContractFactory(
       name: "IERC4906",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC4906__factory>;
@@ -45,6 +49,10 @@ declare module "hardhat/types/runtime" {
       name: "IERC20",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC20__factory>;
+    getContractFactory(
+      name: "SafeERC20",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.SafeERC20__factory>;
     getContractFactory(
       name: "ERC721",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -86,6 +94,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SafeCast__factory>;
     getContractFactory(
+      name: "ReentrancyGuard",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ReentrancyGuard__factory>;
+    getContractFactory(
       name: "Strings",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Strings__factory>;
@@ -93,6 +105,10 @@ declare module "hardhat/types/runtime" {
       name: "AddressBook",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AddressBook__factory>;
+    getContractFactory(
+      name: "BatchTransactions",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.BatchTransactions__factory>;
     getContractFactory(
       name: "DomainRegistry",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -106,9 +122,21 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC20TokenFactory__factory>;
     getContractFactory(
+      name: "FlowActions",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.FlowActions__factory>;
+    getContractFactory(
+      name: "LendingProtocol",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.LendingProtocol__factory>;
+    getContractFactory(
       name: "RedeemLinksEscrow",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.RedeemLinksEscrow__factory>;
+    getContractFactory(
+      name: "ScheduledTransactions",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ScheduledTransactions__factory>;
     getContractFactory(
       name: "SecureStorage",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -139,6 +167,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IERC721Errors>;
     getContractAt(
+      name: "IERC1363",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC1363>;
+    getContractAt(
       name: "IERC4906",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -158,6 +191,11 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.IERC20>;
+    getContractAt(
+      name: "SafeERC20",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.SafeERC20>;
     getContractAt(
       name: "ERC721",
       address: string | ethers.Addressable,
@@ -209,6 +247,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.SafeCast>;
     getContractAt(
+      name: "ReentrancyGuard",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ReentrancyGuard>;
+    getContractAt(
       name: "Strings",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -218,6 +261,11 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.AddressBook>;
+    getContractAt(
+      name: "BatchTransactions",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.BatchTransactions>;
     getContractAt(
       name: "DomainRegistry",
       address: string | ethers.Addressable,
@@ -234,10 +282,25 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.ERC20TokenFactory>;
     getContractAt(
+      name: "FlowActions",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.FlowActions>;
+    getContractAt(
+      name: "LendingProtocol",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.LendingProtocol>;
+    getContractAt(
       name: "RedeemLinksEscrow",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.RedeemLinksEscrow>;
+    getContractAt(
+      name: "ScheduledTransactions",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ScheduledTransactions>;
     getContractAt(
       name: "SecureStorage",
       address: string | ethers.Addressable,
@@ -266,6 +329,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC721Errors>;
     deployContract(
+      name: "IERC1363",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC1363>;
+    deployContract(
       name: "IERC4906",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC4906>;
@@ -281,6 +348,10 @@ declare module "hardhat/types/runtime" {
       name: "IERC20",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC20>;
+    deployContract(
+      name: "SafeERC20",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.SafeERC20>;
     deployContract(
       name: "ERC721",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -322,6 +393,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SafeCast>;
     deployContract(
+      name: "ReentrancyGuard",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ReentrancyGuard>;
+    deployContract(
       name: "Strings",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Strings>;
@@ -329,6 +404,10 @@ declare module "hardhat/types/runtime" {
       name: "AddressBook",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.AddressBook>;
+    deployContract(
+      name: "BatchTransactions",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.BatchTransactions>;
     deployContract(
       name: "DomainRegistry",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -342,9 +421,21 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC20TokenFactory>;
     deployContract(
+      name: "FlowActions",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.FlowActions>;
+    deployContract(
+      name: "LendingProtocol",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.LendingProtocol>;
+    deployContract(
       name: "RedeemLinksEscrow",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.RedeemLinksEscrow>;
+    deployContract(
+      name: "ScheduledTransactions",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ScheduledTransactions>;
     deployContract(
       name: "SecureStorage",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -375,6 +466,11 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC721Errors>;
     deployContract(
+      name: "IERC1363",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC1363>;
+    deployContract(
       name: "IERC4906",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -394,6 +490,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC20>;
+    deployContract(
+      name: "SafeERC20",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.SafeERC20>;
     deployContract(
       name: "ERC721",
       args: any[],
@@ -445,6 +546,11 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SafeCast>;
     deployContract(
+      name: "ReentrancyGuard",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ReentrancyGuard>;
+    deployContract(
       name: "Strings",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -454,6 +560,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.AddressBook>;
+    deployContract(
+      name: "BatchTransactions",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.BatchTransactions>;
     deployContract(
       name: "DomainRegistry",
       args: any[],
@@ -470,10 +581,25 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ERC20TokenFactory>;
     deployContract(
+      name: "FlowActions",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.FlowActions>;
+    deployContract(
+      name: "LendingProtocol",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.LendingProtocol>;
+    deployContract(
       name: "RedeemLinksEscrow",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.RedeemLinksEscrow>;
+    deployContract(
+      name: "ScheduledTransactions",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ScheduledTransactions>;
     deployContract(
       name: "SecureStorage",
       args: any[],

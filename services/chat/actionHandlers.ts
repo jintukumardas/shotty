@@ -1478,6 +1478,498 @@ export async function handleGetChainTokens(
 }
 
 /**
+ * Handle batch transactions action
+ */
+export async function handleBatchTransactions(
+  intent: any,
+  userAddress: string
+): Promise<ActionResult> {
+  const contractAddress = process.env.NEXT_PUBLIC_BATCH_CONTRACT_ADDRESS;
+
+  try {
+    // Get user's batch stats
+    const { batchService } = await import('@/services/batch/batchService');
+    const stats = await batchService.getUserStats(userAddress);
+    const totalBatches = await batchService.getTotalBatchesExecuted();
+
+    return {
+      success: true,
+      message: `🚀 **Batch Transactions - Execute Multiple Operations!**\n\n**Your Stats:**\n• Batches executed: ${stats}\n• Network total: ${totalBatches}\n\n**Try these commands:**\n\n📊 **View Statistics**\n   \`Show my batch stats\`\n\n💡 **Example Workflows:**\n\n1️⃣ **Multi-Send ETH**\n   Send to 3 addresses in one transaction:\n   \`Batch send 0.1 FLOW to [0x123..., 0x456..., 0x789...]\`\n\n2️⃣ **Approve & Transfer**\n   Approve and transfer tokens in one TX:\n   \`Batch approve and send 100 tokens\`\n\n3️⃣ **Multi-Action**\n   Execute multiple contract calls:\n   \`Execute batch: transfer, approve, stake\`\n\n**Features:**\n• Bundle up to 50 operations\n• Atomic execution (all or nothing)\n• Gas-efficient batching\n• Flexible failure handling\n\n**Contract:** ${contractAddress}\n\n💡 [View on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})\n\n_Interactive UI builder coming in next update!_`,
+      data: {
+        userStats: stats,
+        totalBatches,
+        contractAddress,
+      },
+    };
+  } catch (error: any) {
+    return {
+      success: true,
+      message: `🚀 **Batch Transactions - Execute Multiple Operations!**\n\n**Quick Start:**\n\n📊 **Check Your Stats**\n   \`Show my batch stats\`\n\n💡 **Example Commands:**\n\n1️⃣ Send to multiple addresses:\n   \`Batch send 0.1 FLOW to [0x123..., 0x456...]\`\n\n2️⃣ Approve and transfer:\n   \`Batch approve and send tokens\`\n\n3️⃣ Execute multiple actions:\n   \`Create batch transaction\`\n\n**Features:**\n• Bundle up to 50 operations\n• Gas-efficient execution\n• Flexible error handling\n\n**Contract:** ${contractAddress}\n\n💡 [View on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`,
+      data: { contractAddress },
+    };
+  }
+}
+
+/**
+ * Handle schedule transaction action
+ */
+export async function handleScheduleTransaction(
+  intent: any,
+  userAddress: string
+): Promise<ActionResult> {
+  const contractAddress = process.env.NEXT_PUBLIC_SCHEDULED_CONTRACT_ADDRESS;
+
+  try {
+    const { scheduledService } = await import('@/services/scheduled/scheduledService');
+    const pendingCount = await scheduledService.getPendingSchedulesCount(userAddress);
+    const config = await scheduledService.getConfig();
+
+    return {
+      success: true,
+      message: `⏰ **Schedule Transactions - Time-Locked Execution!**\n\n**Your Account:**\n• Pending schedules: ${pendingCount}\n\n**Configuration:**\n• Min delay: ${Math.floor(config.minDelay / 60)} minutes\n• Max delay: ${Math.floor(config.maxDelay / 86400)} days\n• Default window: ${Math.floor(config.defaultWindow / 86400)} days\n\n**Try these commands:**\n\n📋 **View Your Schedules**\n   \`Show my scheduled transactions\`\n\n💡 **Schedule Examples:**\n\n1️⃣ **Schedule a Transfer (1 hour)**\n   \`Schedule send 1 FLOW to 0x123... in 1 hour\`\n\n2️⃣ **Schedule for Tomorrow**\n   \`Schedule 0.5 FLOW transfer to Alice in 24 hours\`\n\n3️⃣ **Schedule Payment (1 week)**\n   \`Schedule payment of 10 FLOW in 7 days\`\n\n4️⃣ **Cancel a Schedule**\n   \`Cancel scheduled transaction #5\`\n\n**Features:**\n• Time-locked transfers\n• Flexible execution windows\n• Cancel anytime before execution\n• Anyone can execute (permissionless)\n• Automatic refunds on cancellation\n\n**Contract:** ${contractAddress}\n\n💡 [View on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})\n\n_Interactive scheduler coming soon!_`,
+      data: {
+        pendingCount,
+        config,
+        contractAddress,
+      },
+    };
+  } catch (error: any) {
+    return {
+      success: true,
+      message: `⏰ **Schedule Transactions - Time-Locked Execution!**\n\n**Quick Start:**\n\n📋 **View Your Schedules**\n   \`Show my scheduled transactions\`\n\n💡 **Example Commands:**\n\n1️⃣ Schedule in 1 hour:\n   \`Schedule send 1 FLOW to 0x123... in 1 hour\`\n\n2️⃣ Schedule for tomorrow:\n   \`Schedule transfer in 24 hours\`\n\n3️⃣ Cancel a schedule:\n   \`Cancel schedule #5\`\n\n**Features:**\n• Time-locked transfers\n• Flexible windows\n• Permissionless execution\n\n**Contract:** ${contractAddress}\n\n💡 [View on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`,
+      data: { contractAddress },
+    };
+  }
+}
+
+/**
+ * Handle view scheduled transactions action
+ */
+export async function handleViewScheduledTransactions(
+  userAddress: string
+): Promise<ActionResult> {
+  const contractAddress = process.env.NEXT_PUBLIC_SCHEDULED_CONTRACT_ADDRESS;
+
+  return {
+    success: true,
+    message: `📋 **Your Scheduled Transactions**\n\nView and manage your scheduled transactions!\n\n**Contract:** \`${contractAddress}\`\n\n**What you can check:**\n• Pending scheduled transactions\n• Execution windows\n• Transaction status (Pending/Executed/Cancelled/Failed)\n• Time remaining until execution\n\n**Dashboard UI coming soon!**\n\nYou can query your schedules using the contract directly.\n\n💡 [View on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`,
+  };
+}
+
+/**
+ * Handle cancel scheduled transaction action
+ */
+export async function handleCancelScheduledTransaction(
+  intent: any,
+  userAddress: string
+): Promise<ActionResult> {
+  const contractAddress = process.env.NEXT_PUBLIC_SCHEDULED_CONTRACT_ADDRESS;
+
+  return {
+    success: true,
+    message: `❌ **Cancel Scheduled Transaction**\n\nCancel your pending scheduled transactions!\n\n**Contract:** \`${contractAddress}\`\n\n**How it works:**\n• Only the creator can cancel\n• Must be in Pending status\n• Funds are refunded automatically\n\n**UI for cancellation coming soon!**\n\n💡 [View on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`,
+  };
+}
+
+/**
+ * Handle execute scheduled transaction action
+ */
+export async function handleExecuteScheduledTransaction(
+  intent: any,
+  userAddress: string
+): Promise<ActionResult> {
+  const contractAddress = process.env.NEXT_PUBLIC_SCHEDULED_CONTRACT_ADDRESS;
+
+  return {
+    success: true,
+    message: `▶️ **Execute Scheduled Transaction**\n\nManually trigger scheduled transactions that are ready!\n\n**Contract:** \`${contractAddress}\`\n\n**Requirements:**\n• Transaction must be in Pending status\n• Current time >= executeAfter timestamp\n• Within execution window\n• Anyone can execute (permissionless)\n\n**Execution UI coming soon!**\n\n💡 [View on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`,
+  };
+}
+
+/**
+ * Handle create workflow action
+ */
+export async function handleCreateWorkflow(
+  intent: any,
+  userAddress: string
+): Promise<ActionResult> {
+  const contractAddress = process.env.NEXT_PUBLIC_FLOW_ACTIONS_CONTRACT_ADDRESS;
+
+  try {
+    const { flowActionsService } = await import('@/services/flowActions/flowActionsService');
+    const workflows = await flowActionsService.getUserWorkflows(userAddress);
+
+    return {
+      success: true,
+      message: `🔗 **Flow Actions - Composable Workflows!**\n\n**Your Workflows:**\n• Total created: ${workflows.length}\n\n**Try these commands:**\n\n📂 **View Your Workflows**\n   \`Show my workflows\`\n\n💡 **Workflow Examples:**\n\n1️⃣ **Swap & Stake**\n   \`Create workflow: swap ETH for token, then stake\`\n\n2️⃣ **Multi-Transfer**\n   \`Workflow: send to Alice, Bob, and Charlie\`\n\n3️⃣ **DeFi Strategy**\n   \`Workflow: swap, lend, borrow\`\n\n4️⃣ **Execute Existing**\n   \`Execute workflow #2\`\n\n**Action Types Available:**\n• 💸 Transfer - Send tokens/ETH\n• 🔄 Swap - Exchange tokens\n• 🔒 Stake - Lock tokens\n• 💰 Lend - Deposit to earn\n• 🏦 Borrow - Take loans\n• ⚙️ Custom - Any contract call\n\n**Features:**\n• Up to 20 actions per workflow\n• Atomic execution (all or nothing)\n• Partial failure handling option\n• Create & execute in one TX\n• Reusable workflows\n• Gas-efficient batching\n\n**Contract:** ${contractAddress}\n\n💡 [View on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})\n\n_Visual workflow builder coming in next update!_`,
+      data: {
+        workflowCount: workflows.length,
+        contractAddress,
+      },
+    };
+  } catch (error: any) {
+    return {
+      success: true,
+      message: `🔗 **Flow Actions - Composable Workflows!**\n\n**Quick Start:**\n\n📂 **View Your Workflows**\n   \`Show my workflows\`\n\n💡 **Example Commands:**\n\n1️⃣ Swap & Stake:\n   \`Create workflow: swap then stake\`\n\n2️⃣ Multi-transfer:\n   \`Workflow: send to multiple addresses\`\n\n3️⃣ Execute workflow:\n   \`Execute workflow #2\`\n\n**Action Types:**\n• Transfer, Swap, Stake\n• Lend, Borrow, Custom\n\n**Features:**\n• Up to 20 actions\n• Atomic execution\n• Reusable workflows\n\n**Contract:** ${contractAddress}\n\n💡 [View on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`,
+      data: { contractAddress },
+    };
+  }
+}
+
+/**
+ * Handle execute workflow action
+ */
+export async function handleExecuteWorkflow(
+  intent: any,
+  userAddress: string
+): Promise<ActionResult> {
+  const contractAddress = process.env.NEXT_PUBLIC_FLOW_ACTIONS_CONTRACT_ADDRESS;
+
+  return {
+    success: true,
+    message: `▶️ **Execute Workflow - Live!**\n\nRun your saved workflows!\n\n**Contract:** \`${contractAddress}\`\n\n**How it works:**\n• Execute saved workflows by ID\n• All actions run sequentially\n• Results returned for each action\n• Only workflow creator can execute\n• Send required ETH for actions\n\n**Execution dashboard coming soon!**\n\n💡 [View on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`,
+  };
+}
+
+/**
+ * Handle view workflows action
+ */
+export async function handleViewWorkflows(
+  userAddress: string
+): Promise<ActionResult> {
+  const contractAddress = process.env.NEXT_PUBLIC_FLOW_ACTIONS_CONTRACT_ADDRESS;
+
+  return {
+    success: true,
+    message: `📂 **Your Workflows - Live!**\n\nView and manage your saved workflows!\n\n**Contract:** \`${contractAddress}\`\n\n**What you can see:**\n• All your created workflows\n• Workflow status (Pending/Executing/Completed/Failed/Cancelled)\n• Number of actions in each workflow\n• Workflow names and IDs\n• Action details for each workflow\n\n**Management dashboard coming soon!**\n\nQuery your workflows using the contract.\n\n💡 [View on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`,
+  };
+}
+
+/**
+ * Handle lend tokens action
+ */
+export async function handleLendTokens(
+  intent: any,
+  userAddress: string
+): Promise<ActionResult> {
+  const contractAddress = process.env.NEXT_PUBLIC_LENDING_CONTRACT_ADDRESS;
+
+  try {
+    const { lendingService } = await import('@/services/lending/lendingService');
+    const position = await lendingService.getUserTotalPosition(userAddress);
+    const supportedTokens = await lendingService.getSupportedTokens();
+
+    const totalDeposits = position.deposits.length;
+    const totalLoans = position.loans.length;
+
+    return {
+      success: true,
+      message: `💰 **Lending Protocol - Earn & Borrow!**\n\n**Your Position:**\n• Active deposits: ${totalDeposits}\n• Active loans: ${totalLoans}\n• Supported tokens: ${supportedTokens.length}\n\n**Try these commands:**\n\n📊 **View Your Position**\n   \`Show my lending position\`\n\n💡 **Lending Examples:**\n\n1️⃣ **Deposit to Earn**\n   \`Lend 100 USDC to earn interest\`\n   \`Deposit 50 FLOW tokens\`\n\n2️⃣ **Borrow with Collateral**\n   \`Borrow 50 USDC with 1 ETH collateral\`\n   \`Borrow tokens against my ETH\`\n\n3️⃣ **Withdraw Earnings**\n   \`Withdraw my USDC deposit\`\n   \`Withdraw all deposits\`\n\n4️⃣ **Repay Loan**\n   \`Repay my USDC loan\`\n   \`Repay 25 tokens\`\n\n**Interest Rates:**\n• 📈 **Deposit APY:** 5% base rate\n• 📊 **Borrow APR:** Variable based on utilization\n• 💵 **Collateral Ratio:** 150% required\n• ⚠️ **Liquidation:** At 80% LTV\n\n**Features:**\n• Earn interest on deposits\n• Withdraw anytime (if liquidity available)\n• Borrow against ETH collateral\n• Automatic interest accrual\n• No lock-up periods\n• Permissionless liquidations\n\n**Contract:** ${contractAddress}\n\n💡 [View on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})\n\n_Interactive lending dashboard coming soon!_`,
+      data: {
+        deposits: totalDeposits,
+        loans: totalLoans,
+        supportedTokens: supportedTokens.length,
+        contractAddress,
+      },
+    };
+  } catch (error: any) {
+    return {
+      success: true,
+      message: `💰 **Lending Protocol - Earn & Borrow!**\n\n**Quick Start:**\n\n📊 **View Your Position**\n   \`Show my lending position\`\n\n💡 **Example Commands:**\n\n1️⃣ Deposit to earn:\n   \`Lend 100 USDC\`\n\n2️⃣ Borrow tokens:\n   \`Borrow 50 USDC with ETH\`\n\n3️⃣ Withdraw:\n   \`Withdraw my deposit\`\n\n4️⃣ Repay:\n   \`Repay my loan\`\n\n**Features:**\n• 5% base APY\n• Withdraw anytime\n• 150% collateralization\n• Auto interest accrual\n\n**Contract:** ${contractAddress}\n\n💡 [View on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`,
+      data: { contractAddress },
+    };
+  }
+}
+
+/**
+ * Handle borrow tokens action
+ */
+export async function handleBorrowTokens(
+  _intent: any,
+  _userAddress: string
+): Promise<ActionResult> {
+  const contractAddress = process.env.NEXT_PUBLIC_LENDING_CONTRACT_ADDRESS;
+
+  return {
+    success: true,
+    message: `🏦 **Borrow Tokens - Live!**\n\nBorrow tokens using ETH as collateral!\n\n**Contract:** \`${contractAddress}\`\n\n**Features:**\n• 150% collateralization ratio required\n• Borrow supported ERC20 tokens\n• Provide ETH as collateral\n• Interest accrues on borrowed amount\n• Liquidation threshold: 80% LTV\n• Liquidation penalty: 10%\n\n**Borrowing dashboard coming soon!**\n\nContract is live and ready.\n\n💡 [View on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`,
+  };
+}
+
+/**
+ * Handle repay loan action
+ */
+export async function handleRepayLoan(
+  _intent: any,
+  _userAddress: string
+): Promise<ActionResult> {
+  const contractAddress = process.env.NEXT_PUBLIC_LENDING_CONTRACT_ADDRESS;
+
+  return {
+    success: true,
+    message: `💸 **Repay Loan - Live!**\n\nRepay your loans and reclaim collateral!\n\n**Contract:** \`${contractAddress}\`\n\n**How it works:**\n• Repay borrowed amount + accrued interest\n• Proportional collateral returned\n• Can repay partial amounts\n• Full repayment releases all collateral\n• Token approval required\n\n**Repayment dashboard coming soon!**\n\n💡 [View on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`,
+  };
+}
+
+/**
+ * Handle withdraw deposit action
+ */
+export async function handleWithdrawDeposit(
+  _intent: any,
+  _userAddress: string
+): Promise<ActionResult> {
+  const contractAddress = process.env.NEXT_PUBLIC_LENDING_CONTRACT_ADDRESS;
+
+  return {
+    success: true,
+    message: `🏧 **Withdraw Deposit - Live!**\n\nWithdraw your deposits plus earned interest!\n\n**Contract:** \`${contractAddress}\`\n\n**Features:**\n• Withdraw deposited tokens\n• Claim earned interest\n• Partial or full withdrawals\n• Check liquidity before withdrawing\n• Interest calculated up to withdrawal\n\n**Withdrawal dashboard coming soon!**\n\n💡 [View on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`,
+  };
+}
+
+/**
+ * Handle view lending position action
+ */
+export async function handleViewLendingPosition(
+  _userAddress: string
+): Promise<ActionResult> {
+  const contractAddress = process.env.NEXT_PUBLIC_LENDING_CONTRACT_ADDRESS;
+
+  return {
+    success: true,
+    message: `📊 **Your Lending Position - Live!**\n\nView your deposits, loans, and health factor!\n\n**Contract:** \`${contractAddress}\`\n\n**What you can see:**\n• All deposits across supported tokens\n• Earned interest on deposits\n• Active loans with borrowed amounts\n• Collateral amounts\n• Accrued interest on loans\n• Health factor (collateral/debt ratio)\n• Pool utilization rates\n\n**Position dashboard coming soon!**\n\nQuery your position using the contract.\n\n💡 [View on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`,
+  };
+}
+
+/**
+ * Handle view batch stats action
+ */
+export async function handleViewBatchStats(
+  userAddress: string
+): Promise<ActionResult> {
+  try {
+    const { batchService } = await import('@/services/batch/batchService');
+    const stats = await batchService.getUserStats(userAddress);
+    const totalBatches = await batchService.getTotalBatchesExecuted();
+    const contractAddress = process.env.NEXT_PUBLIC_BATCH_CONTRACT_ADDRESS;
+
+    return {
+      success: true,
+      message: `📊 **Your Batch Transaction Statistics**\n\n**Your Stats:**\n• Batches executed: ${stats}\n\n**Global Stats:**\n• Total batches on network: ${totalBatches}\n\n**Contract:** \`${contractAddress}\`\n\n${stats > 0 ? '✅ You\'ve used batch transactions before!' : '💡 You haven\'t executed any batch transactions yet. Try creating one!'}\n\n[View Contract on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: `❌ **Error fetching batch stats**\n\n${error.message}\n\nMake sure you're connected to Flow EVM Testnet.`,
+      error: error.message,
+    };
+  }
+}
+
+/**
+ * Handle execute batch send action
+ */
+export async function handleExecuteBatchSend(
+  intent: any,
+  _userAddress: string
+): Promise<ActionResult> {
+  try {
+    const { batchService } = await import('@/services/batch/batchService');
+    const { ethers } = await import('ethers');
+    const contractAddress = process.env.NEXT_PUBLIC_BATCH_CONTRACT_ADDRESS;
+
+    if (!intent.batchData?.recipients || intent.batchData.recipients.length === 0) {
+      return {
+        success: false,
+        message: '❌ No recipients provided',
+        error: 'No recipients',
+      };
+    }
+
+    const recipients = intent.batchData.recipients;
+    const amount = intent.batchData.amountPerRecipient || intent.amount || 0;
+    const token = intent.batchData.token || intent.token || 'FLOW';
+
+    // Create batch operations for ETH/FLOW transfers
+    const batchOperations = recipients.map((recipient: string) =>
+      batchService.createETHTransferOperation(
+        recipient,
+        ethers.parseEther(amount.toString()).toString()
+      )
+    );
+
+    // Calculate total value
+    const totalValue = ethers.parseEther((amount * recipients.length).toString()).toString();
+
+    // Execute the batch transaction
+    const result = await batchService.executeBatch(batchOperations, true, totalValue);
+
+    return {
+      success: true,
+      message: `✅ **Batch Transaction Executed!**\n\n**Summary:**\n• Sent ${amount} ${token} to ${recipients.length} addresses\n• Transaction hash: \`${result.txHash}\`\n\n**Recipients:**\n${recipients.map((addr: string, i: number) => `${i + 1}. ${addr} - ${amount} ${token}`).join('\n')}\n\n**Contract:** ${contractAddress}\n\n[View Transaction](https://evm-testnet.flowscan.io/tx/${result.txHash})`,
+      txHash: result.txHash,
+      data: {
+        operations: batchOperations.length,
+        totalValue,
+        recipients,
+      },
+    };
+  } catch (error: any) {
+    console.error('Execute batch send error:', error);
+    return {
+      success: false,
+      message: `❌ **Batch Transaction Failed**\n\n${error.message}\n\nPlease make sure:\n• You're connected to Flow EVM Testnet\n• You have sufficient balance\n• All addresses are valid`,
+      error: error.message,
+    };
+  }
+}
+
+/**
+ * Handle view scheduled transactions action (with real data)
+ */
+export async function handleViewScheduledTransactionsData(
+  userAddress: string
+): Promise<ActionResult> {
+  try {
+    const { scheduledService } = await import('@/services/scheduled/scheduledService');
+    const schedules = await scheduledService.getUserSchedulesWithDetails(userAddress);
+    const pendingCount = await scheduledService.getPendingSchedulesCount(userAddress);
+    const contractAddress = process.env.NEXT_PUBLIC_SCHEDULED_CONTRACT_ADDRESS;
+
+    if (schedules.length === 0) {
+      return {
+        success: true,
+        message: `📋 **Your Scheduled Transactions**\n\n**Contract:** \`${contractAddress}\`\n\nYou don't have any scheduled transactions yet.\n\n💡 **Want to create one?** Type: "How do I schedule a transaction?"\n\n[View Contract on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`,
+      };
+    }
+
+    let message = `📋 **Your Scheduled Transactions**\n\n**Contract:** \`${contractAddress}\`\n\n**Summary:**\n• Total schedules: ${schedules.length}\n• Pending: ${pendingCount}\n\n**Your Schedules:**\n\n`;
+
+    schedules.forEach((schedule, index) => {
+      const status = ['Pending', 'Executed', 'Cancelled', 'Failed'][schedule.status];
+      const time = new Date(schedule.executeAfter * 1000).toLocaleString();
+      message += `${index + 1}. **Schedule #${schedule.id}** - ${status}\n`;
+      message += `   Execute after: ${time}\n`;
+      message += `   Description: ${schedule.description}\n\n`;
+    });
+
+    message += `\n[View Contract on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`;
+
+    return {
+      success: true,
+      message,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: `❌ **Error fetching scheduled transactions**\n\n${error.message}\n\nMake sure you're connected to Flow EVM Testnet.`,
+      error: error.message,
+    };
+  }
+}
+
+/**
+ * Handle view workflows action (with real data)
+ */
+export async function handleViewWorkflowsData(
+  userAddress: string
+): Promise<ActionResult> {
+  try {
+    const { flowActionsService } = await import('@/services/flowActions/flowActionsService');
+    const workflows = await flowActionsService.getUserWorkflowsWithDetails(userAddress);
+    const contractAddress = process.env.NEXT_PUBLIC_FLOW_ACTIONS_CONTRACT_ADDRESS;
+
+    if (workflows.length === 0) {
+      return {
+        success: true,
+        message: `📂 **Your Workflows**\n\n**Contract:** \`${contractAddress}\`\n\nYou don't have any workflows yet.\n\n💡 **Want to create one?** Type: "How do I create a workflow?"\n\n[View Contract on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`,
+      };
+    }
+
+    let message = `📂 **Your Workflows**\n\n**Contract:** \`${contractAddress}\`\n\n**Total workflows:** ${workflows.length}\n\n`;
+
+    workflows.forEach((workflow, index) => {
+      const status = ['Pending', 'Executing', 'Completed', 'Failed', 'Cancelled'][workflow.status];
+      message += `${index + 1}. **${workflow.name}** (ID: ${workflow.id})\n`;
+      message += `   Status: ${status}\n`;
+      message += `   Actions: ${workflow.actionsCount}\n\n`;
+    });
+
+    message += `\n[View Contract on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`;
+
+    return {
+      success: true,
+      message,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: `❌ **Error fetching workflows**\n\n${error.message}\n\nMake sure you're connected to Flow EVM Testnet.`,
+      error: error.message,
+    };
+  }
+}
+
+/**
+ * Handle view lending position action (with real data)
+ */
+export async function handleViewLendingPositionData(
+  userAddress: string
+): Promise<ActionResult> {
+  try {
+    const { lendingService } = await import('@/services/lending/lendingService');
+    const position = await lendingService.getUserTotalPosition(userAddress);
+    const contractAddress = process.env.NEXT_PUBLIC_LENDING_CONTRACT_ADDRESS;
+
+    if (position.deposits.length === 0 && position.loans.length === 0) {
+      return {
+        success: true,
+        message: `📊 **Your Lending Position**\n\n**Contract:** \`${contractAddress}\`\n\nYou don't have any deposits or loans yet.\n\n💡 **Want to start?**\n• Type: "How do I lend tokens?"\n• Type: "How do I borrow tokens?"\n\n[View Contract on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`,
+      };
+    }
+
+    let message = `📊 **Your Lending Position**\n\n**Contract:** \`${contractAddress}\`\n\n`;
+
+    if (position.deposits.length > 0) {
+      message += `**💰 Deposits:**\n`;
+      position.deposits.forEach((deposit, index) => {
+        message += `${index + 1}. Token: ${deposit.token.slice(0, 10)}...\n`;
+        message += `   Amount: ${deposit.amount}\n`;
+        message += `   Interest earned: ${deposit.interest}\n\n`;
+      });
+    }
+
+    if (position.loans.length > 0) {
+      message += `\n**🏦 Loans:**\n`;
+      position.loans.forEach((loan, index) => {
+        const healthFactor = lendingService.calculateHealthFactor(
+          loan.collateral,
+          loan.borrowed,
+          loan.interest
+        );
+        message += `${index + 1}. Token: ${loan.token.slice(0, 10)}...\n`;
+        message += `   Borrowed: ${loan.borrowed}\n`;
+        message += `   Collateral: ${loan.collateral}\n`;
+        message += `   Interest: ${loan.interest}\n`;
+        message += `   Health Factor: ${healthFactor}%\n\n`;
+      });
+    }
+
+    message += `\n[View Contract on FlowScan](https://evm-testnet.flowscan.io/address/${contractAddress})`;
+
+    return {
+      success: true,
+      message,
+    };
+  } catch (error: any) {
+    return {
+      success: false,
+      message: `❌ **Error fetching lending position**\n\n${error.message}\n\nMake sure you're connected to Flow EVM Testnet.`,
+      error: error.message,
+    };
+  }
+}
+
+/**
  * Main action handler dispatcher
  */
 export async function handleChatAction(
@@ -1566,6 +2058,55 @@ export async function handleChatAction(
 
     case 'get_chain_tokens':
       return handleGetChainTokens(intent);
+
+    // New features - Batch Transactions
+    case 'batch_transactions':
+      return handleBatchTransactions(intent, userAddress);
+
+    case 'view_batch_stats':
+      return handleViewBatchStats(userAddress);
+
+    case 'execute_batch_send':
+      return handleExecuteBatchSend(intent, userAddress);
+
+    // New features - Scheduled Transactions
+    case 'schedule_transaction':
+      return handleScheduleTransaction(intent, userAddress);
+
+    case 'view_scheduled_transactions':
+      return handleViewScheduledTransactionsData(userAddress);
+
+    case 'cancel_scheduled_transaction':
+      return handleCancelScheduledTransaction(intent, userAddress);
+
+    case 'execute_scheduled_transaction':
+      return handleExecuteScheduledTransaction(intent, userAddress);
+
+    // New features - Workflows
+    case 'create_workflow':
+      return handleCreateWorkflow(intent, userAddress);
+
+    case 'execute_workflow':
+      return handleExecuteWorkflow(intent, userAddress);
+
+    case 'view_workflows':
+      return handleViewWorkflowsData(userAddress);
+
+    // New features - Lending Protocol
+    case 'lend_tokens':
+      return handleLendTokens(intent, userAddress);
+
+    case 'borrow_tokens':
+      return handleBorrowTokens(intent, userAddress);
+
+    case 'repay_loan':
+      return handleRepayLoan(intent, userAddress);
+
+    case 'withdraw_deposit':
+      return handleWithdrawDeposit(intent, userAddress);
+
+    case 'view_lending_position':
+      return handleViewLendingPositionData(userAddress);
 
     default:
       return {

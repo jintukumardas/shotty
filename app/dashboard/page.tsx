@@ -1,20 +1,64 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useWallet } from '@/services/blockchain/useWallet';
 import ChatTransactionInterface from '@/components/ChatTransactionInterface';
 import FlowIcon from '@/components/FlowIcon';
-import { Bot, Sparkles, Zap, ChevronDown, Wallet, ExternalLink, Activity, Link as LinkIcon, Send, Coins, QrCode, Users, Globe, Image, DollarSign } from 'lucide-react';
+import { Bot, Sparkles, Zap, ChevronDown, ChevronLeft, ChevronRight, Wallet, ExternalLink, Activity, Link as LinkIcon, Send, Coins, QrCode, Users, Globe, Image, DollarSign, Clock, Layers, Workflow, TrendingUp } from 'lucide-react';
 import { formatBalance } from '@/utils/formatNumber';
 
 export default function Dashboard() {
   const { isConnected, address, balance, chainId } = useWallet();
   const nativeTokenSymbol = chainId === 545 || chainId === 747 ? 'FLOW' : 'ETH';
   const [mounted, setMounted] = useState(false);
+  const chatInterfaceRef = useRef<{ setInput: (text: string) => void } | null>(null);
+
+  // Carousel state
+  const [currentCapabilityIndex, setCurrentCapabilityIndex] = useState(0);
+
+  // Define capabilities for carousel
+  const capabilities = [
+    { icon: Send, title: 'Send Tokens', description: 'Cross-chain transfers', example: 'Send 1 FLOW to 0x...', color: 'text-[#00EF8B]', borderColor: 'border-[#00EF8B]/30' },
+    { icon: DollarSign, title: 'Check Balance', description: 'View wallet balance', example: "What's my balance?", color: 'text-green-400', borderColor: 'border-green-400/30' },
+    { icon: Image, title: 'Mint NFT', description: 'Create digital collectibles', example: 'Mint an NFT', color: 'text-pink-400', borderColor: 'border-pink-400/30' },
+    { icon: Coins, title: 'View NFTs', description: 'See your collection', example: 'Show my NFTs', color: 'text-blue-400', borderColor: 'border-blue-400/30' },
+    { icon: Globe, title: 'Register Domain', description: 'Reserve domain names', example: 'Register domain myname.flow', color: 'text-violet-400', borderColor: 'border-violet-400/30' },
+    { icon: LinkIcon, title: 'Payment Links', description: 'Create redeem links', example: 'Create a link for 5 FLOW', color: 'text-cyan-400', borderColor: 'border-cyan-400/30' },
+    { icon: Users, title: 'Manage Contacts', description: 'Save addresses', example: 'Show my contacts', color: 'text-indigo-400', borderColor: 'border-indigo-400/30' },
+    { icon: Activity, title: 'Transaction History', description: 'View recent activity', example: 'Show my recent transactions', color: 'text-purple-400', borderColor: 'border-purple-400/30' },
+    { icon: QrCode, title: 'Generate QR Code', description: 'Create wallet QR', example: 'Generate QR code', color: 'text-teal-400', borderColor: 'border-teal-400/30' },
+    { icon: Coins, title: 'Create Token', description: 'Deploy ERC20 tokens', example: 'Create a token', color: 'text-rose-400', borderColor: 'border-rose-400/30' },
+    { icon: TrendingUp, title: 'Cross-Chain Bridge', description: 'Bridge tokens across chains', example: 'Bridge tokens between networks', color: 'text-amber-400', borderColor: 'border-amber-400/30' },
+  ];
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Auto-rotate carousel every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentCapabilityIndex((prev) => (prev + 1) % capabilities.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [capabilities.length]);
+
+  const handleCapabilityClick = (example: string) => {
+    if (chatInterfaceRef.current) {
+      chatInterfaceRef.current.setInput(example);
+    }
+  };
+
+  const nextCapability = () => {
+    setCurrentCapabilityIndex((prev) => (prev + 1) % capabilities.length);
+  };
+
+  const prevCapability = () => {
+    setCurrentCapabilityIndex((prev) => (prev - 1 + capabilities.length) % capabilities.length);
+  };
+
+  const currentCapability = capabilities[currentCapabilityIndex];
+  const CapabilityIcon = currentCapability.icon;
 
   if (!mounted) {
     return null;
@@ -136,139 +180,145 @@ export default function Dashboard() {
                 </div>
               )}
 
-              {/* AI Capabilities */}
+              {/* AI Capabilities Carousel */}
               <div className="bg-[#1E1E1E]/60 backdrop-blur-xl rounded-2xl p-6 border border-[#2A2A2A]/50">
-                <div className="flex items-center gap-2 mb-4">
-                  <Sparkles className="w-5 h-5 text-[#00EF8B]" />
-                  <h3 className="text-sm font-semibold text-white">AI Capabilities</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-[#00EF8B]" />
+                    <h3 className="text-sm font-semibold text-white">AI Capabilities</h3>
+                  </div>
+                  <span className="text-[10px] text-gray-600 uppercase tracking-wider">Click to use</span>
                 </div>
-                <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#2A2A2A] scrollbar-track-transparent">
-                  {/* Token Operations */}
-                  <div className="flex items-start gap-3 p-3 bg-[#161616]/50 rounded-lg hover:bg-[#161616] transition-colors">
-                    <Send className="w-4 h-4 text-[#00EF8B] mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="text-sm font-medium text-white">Send Tokens</div>
-                      <div className="text-xs text-gray-500">Cross-chain transfers</div>
-                    </div>
+
+                {/* Carousel Container */}
+                <div className="relative overflow-hidden min-h-[140px]">
+                  {/* Carousel Slide */}
+                  <div className="transition-all duration-500 ease-in-out transform">
+                    <button
+                      onClick={() => handleCapabilityClick(currentCapability.example)}
+                      className={`w-full flex flex-col items-center justify-center p-6 bg-gradient-to-br from-[#161616]/80 to-[#1E1E1E]/80 rounded-lg hover:from-[#161616] hover:to-[#1E1E1E] hover:${currentCapability.borderColor} border border-transparent transition-all cursor-pointer group`}
+                    >
+                      <div className={`${currentCapability.color} mb-3 transform group-hover:scale-110 transition-transform duration-200`}>
+                        <CapabilityIcon className="w-8 h-8" />
+                      </div>
+                      <div className="text-center">
+                        <div className="text-base font-semibold text-white mb-1">{currentCapability.title}</div>
+                        <div className="text-xs text-gray-400 mb-2">{currentCapability.description}</div>
+                        <div className="text-[10px] text-gray-500 font-mono bg-[#0A0A0A]/50 px-2 py-1 rounded">
+                          {currentCapability.example}
+                        </div>
+                      </div>
+                    </button>
                   </div>
 
-                  <div className="flex items-start gap-3 p-3 bg-[#161616]/50 rounded-lg hover:bg-[#161616] transition-colors">
-                    <DollarSign className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="text-sm font-medium text-white">Check Balance</div>
-                      <div className="text-xs text-gray-500">View wallet balance</div>
-                    </div>
-                  </div>
+                  {/* Navigation Controls */}
+                  <div className="flex items-center justify-between mt-4">
+                    <button
+                      onClick={prevCapability}
+                      className="p-2 bg-[#161616]/50 hover:bg-[#161616] rounded-lg border border-[#2A2A2A]/50 hover:border-[#00EF8B]/30 transition-all group"
+                      aria-label="Previous capability"
+                    >
+                      <ChevronLeft className="w-4 h-4 text-gray-400 group-hover:text-[#00EF8B]" />
+                    </button>
 
-                  <div className="flex items-start gap-3 p-3 bg-[#161616]/50 rounded-lg hover:bg-[#161616] transition-colors">
-                    <LinkIcon className="w-4 h-4 text-[#00D9FF] mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="text-sm font-medium text-white">Payment Links</div>
-                      <div className="text-xs text-gray-500">Create redeemable links</div>
+                    {/* Dots Indicator */}
+                    <div className="flex gap-1.5">
+                      {capabilities.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentCapabilityIndex(index)}
+                          className={`h-1.5 rounded-full transition-all ${
+                            index === currentCapabilityIndex
+                              ? 'w-6 bg-[#00EF8B]'
+                              : 'w-1.5 bg-gray-600 hover:bg-gray-500'
+                          }`}
+                          aria-label={`Go to slide ${index + 1}`}
+                        />
+                      ))}
                     </div>
-                  </div>
 
-                  {/* NFT Operations */}
-                  <div className="flex items-start gap-3 p-3 bg-[#161616]/50 rounded-lg hover:bg-[#161616] transition-colors">
-                    <Sparkles className="w-4 h-4 text-orange-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="text-sm font-medium text-white">Mint NFTs</div>
-                      <div className="text-xs text-gray-500">Create digital collectibles</div>
-                    </div>
+                    <button
+                      onClick={nextCapability}
+                      className="p-2 bg-[#161616]/50 hover:bg-[#161616] rounded-lg border border-[#2A2A2A]/50 hover:border-[#00EF8B]/30 transition-all group"
+                      aria-label="Next capability"
+                    >
+                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-[#00EF8B]" />
+                    </button>
                   </div>
+                </div>
 
-                  <div className="flex items-start gap-3 p-3 bg-[#161616]/50 rounded-lg hover:bg-[#161616] transition-colors">
-                    <Image className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="text-sm font-medium text-white">View NFTs</div>
-                      <div className="text-xs text-gray-500">Browse your collection</div>
-                    </div>
-                  </div>
+                {/* Caption */}
+                <div className="mt-4 pt-4 border-t border-[#2A2A2A]/50">
+                  <p className="text-[10px] text-gray-600 text-center">💡 Click the card or use arrows to navigate • Auto-rotates every 4s</p>
+                </div>
+              </div>
 
-                  {/* Domain Operations */}
-                  <div className="flex items-start gap-3 p-3 bg-[#161616]/50 rounded-lg hover:bg-[#161616] transition-colors">
-                    <Globe className="w-4 h-4 text-violet-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="text-sm font-medium text-white">Register Domains</div>
-                      <div className="text-xs text-gray-500">Reserve .flow domains</div>
+              {/* In Development Features */}
+              <div className="bg-[#1E1E1E]/60 backdrop-blur-xl rounded-2xl p-6 border border-[#2A2A2A]/50">
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles className="w-4 h-4 text-amber-400" />
+                  <h3 className="text-sm font-semibold text-amber-400 uppercase tracking-wider">In Development</h3>
+                </div>
+                <p className="text-[10px] text-amber-500/60 mb-4 leading-relaxed">
+                  These features are still being tested. Use at your own risk.
+                </p>
+                <div className="space-y-2">
+                  {/* Batch Transactions */}
+                  <button
+                    onClick={() => handleCapabilityClick('Execute batch transactions')}
+                    className="w-full flex items-start gap-3 p-3 bg-[#161616]/30 rounded-lg hover:bg-[#161616] hover:border-purple-400/30 border border-amber-500/10 transition-all cursor-pointer opacity-75"
+                  >
+                    <Layers className="w-4 h-4 text-purple-400 mt-0.5 flex-shrink-0" />
+                    <div className="text-left">
+                      <div className="text-sm font-medium text-white">Batch Transactions</div>
+                      <div className="text-xs text-gray-500">Multi-operation execution</div>
                     </div>
-                  </div>
+                  </button>
 
-                  <div className="flex items-start gap-3 p-3 bg-[#161616]/50 rounded-lg hover:bg-[#161616] transition-colors">
-                    <Globe className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="text-sm font-medium text-white">Resolve Domains</div>
-                      <div className="text-xs text-gray-500">Lookup .flow addresses</div>
+                  {/* Scheduled Transactions */}
+                  <button
+                    onClick={() => handleCapabilityClick('Schedule a transaction')}
+                    className="w-full flex items-start gap-3 p-3 bg-[#161616]/30 rounded-lg hover:bg-[#161616] hover:border-sky-400/30 border border-amber-500/10 transition-all cursor-pointer opacity-75"
+                  >
+                    <Clock className="w-4 h-4 text-sky-400 mt-0.5 flex-shrink-0" />
+                    <div className="text-left">
+                      <div className="text-sm font-medium text-white">Schedule TXs</div>
+                      <div className="text-xs text-gray-500">Time-locked transactions</div>
                     </div>
-                  </div>
+                  </button>
 
-                  <div className="flex items-start gap-3 p-3 bg-[#161616]/50 rounded-lg hover:bg-[#161616] transition-colors">
-                    <Globe className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="text-sm font-medium text-white">Update Domains</div>
-                      <div className="text-xs text-gray-500">Change domain pointers</div>
+                  {/* Flow Actions / Workflows */}
+                  <button
+                    onClick={() => handleCapabilityClick('Create a workflow')}
+                    className="w-full flex items-start gap-3 p-3 bg-[#161616]/30 rounded-lg hover:bg-[#161616] hover:border-fuchsia-400/30 border border-amber-500/10 transition-all cursor-pointer opacity-75"
+                  >
+                    <Workflow className="w-4 h-4 text-fuchsia-400 mt-0.5 flex-shrink-0" />
+                    <div className="text-left">
+                      <div className="text-sm font-medium text-white">Workflows</div>
+                      <div className="text-xs text-gray-500">Composable action chains</div>
                     </div>
-                  </div>
+                  </button>
 
-                  {/* ERC20 Token Operations */}
-                  <div className="flex items-start gap-3 p-3 bg-[#161616]/50 rounded-lg hover:bg-[#161616] transition-colors">
-                    <Coins className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="text-sm font-medium text-white">Create Tokens</div>
-                      <div className="text-xs text-gray-500">Deploy ERC20 contracts</div>
+                  {/* Lending Protocol */}
+                  <button
+                    onClick={() => handleCapabilityClick('Lend tokens')}
+                    className="w-full flex items-start gap-3 p-3 bg-[#161616]/30 rounded-lg hover:bg-[#161616] hover:border-emerald-400/30 border border-amber-500/10 transition-all cursor-pointer opacity-75"
+                  >
+                    <TrendingUp className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
+                    <div className="text-left">
+                      <div className="text-sm font-medium text-white">Lending</div>
+                      <div className="text-xs text-gray-500">DeFi lending & borrowing</div>
                     </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 p-3 bg-[#161616]/50 rounded-lg hover:bg-[#161616] transition-colors">
-                    <Coins className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="text-sm font-medium text-white">Token Details</div>
-                      <div className="text-xs text-gray-500">Query token info</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 p-3 bg-[#161616]/50 rounded-lg hover:bg-[#161616] transition-colors">
-                    <Coins className="w-4 h-4 text-pink-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="text-sm font-medium text-white">My Tokens</div>
-                      <div className="text-xs text-gray-500">View created tokens</div>
-                    </div>
-                  </div>
-
-                  {/* Contact Operations */}
-                  <div className="flex items-start gap-3 p-3 bg-[#161616]/50 rounded-lg hover:bg-[#161616] transition-colors">
-                    <Users className="w-4 h-4 text-indigo-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="text-sm font-medium text-white">Manage Contacts</div>
-                      <div className="text-xs text-gray-500">Add, view, update contacts</div>
-                    </div>
-                  </div>
-
-                  {/* Other Operations */}
-                  <div className="flex items-start gap-3 p-3 bg-[#161616]/50 rounded-lg hover:bg-[#161616] transition-colors">
-                    <QrCode className="w-4 h-4 text-teal-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="text-sm font-medium text-white">Generate QR</div>
-                      <div className="text-xs text-gray-500">QR codes for addresses</div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-3 p-3 bg-[#161616]/50 rounded-lg hover:bg-[#161616] transition-colors">
-                    <Activity className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <div className="text-sm font-medium text-white">Track TXs</div>
-                      <div className="text-xs text-gray-500">Monitor transactions</div>
-                    </div>
-                  </div>
+                  </button>
                 </div>
               </div>
 
               {/* Deployed Contracts */}
               <div className="bg-[#1E1E1E]/60 backdrop-blur-xl rounded-2xl p-6 border border-[#2A2A2A]/50">
                 <h3 className="text-sm font-semibold text-white mb-4">Deployed Contracts</h3>
-                <div className="space-y-2">
+                <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-[#2A2A2A] scrollbar-track-transparent">
                   <a
-                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_ESCROW_CONTRACT_ADDRESS || '0x015655A8bBaCA2a2be4b8F564f0EAC4EdcCa8Cd3'}`}
+                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_ESCROW_CONTRACT_ADDRESS || '0x5d726C51a99a0F78a05b5ab1591340B321778e75'}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-2 hover:bg-[#161616]/50 rounded-lg transition-colors group"
@@ -277,7 +327,7 @@ export default function Dashboard() {
                     <ExternalLink className="w-3 h-3 text-gray-600 group-hover:text-[#00EF8B]" />
                   </a>
                   <a
-                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_NFT_CONTRACT_ADDRESS || '0x26E82B153ba980492DB3c7D8D898C48248E5b0f9'}`}
+                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_NFT_CONTRACT_ADDRESS || '0x332ee5D730cBFD516Bac7D1e0CFf763d235dFF0A'}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-2 hover:bg-[#161616]/50 rounded-lg transition-colors group"
@@ -286,7 +336,7 @@ export default function Dashboard() {
                     <ExternalLink className="w-3 h-3 text-gray-600 group-hover:text-[#00EF8B]" />
                   </a>
                   <a
-                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_DOMAIN_CONTRACT_ADDRESS || '0x05153fcD5eA3c5515345B886b5D92E3bf7e30516'}`}
+                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_DOMAIN_CONTRACT_ADDRESS || '0x55422db56C11a62AfB285e70c6a541A9E80B70f3'}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-2 hover:bg-[#161616]/50 rounded-lg transition-colors group"
@@ -295,7 +345,7 @@ export default function Dashboard() {
                     <ExternalLink className="w-3 h-3 text-gray-600 group-hover:text-[#00EF8B]" />
                   </a>
                   <a
-                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_ADDRESSBOOK_CONTRACT_ADDRESS || '0x369fB3ED4FD33B365354E116cB0E556b541A3796'}`}
+                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_ADDRESSBOOK_CONTRACT_ADDRESS || '0x4354BE4A734E3DC61182F0e09Bc5B0cc264CC218'}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-2 hover:bg-[#161616]/50 rounded-lg transition-colors group"
@@ -304,12 +354,48 @@ export default function Dashboard() {
                     <ExternalLink className="w-3 h-3 text-gray-600 group-hover:text-[#00EF8B]" />
                   </a>
                   <a
-                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_SECURESTORAGE_CONTRACT_ADDRESS || '0x51cda9f73020429854c43Ddc51f6cA0a394629a2'}`}
+                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_SECURESTORAGE_CONTRACT_ADDRESS || '0x42D2e14cb7d931216F0154625db3dA4F3e90525B'}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-2 hover:bg-[#161616]/50 rounded-lg transition-colors group"
                   >
                     <span className="text-sm text-gray-400 group-hover:text-gray-300">Secure Storage</span>
+                    <ExternalLink className="w-3 h-3 text-gray-600 group-hover:text-[#00EF8B]" />
+                  </a>
+                  <a
+                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_BATCH_CONTRACT_ADDRESS || '0xC3d8AfB3462f726Db9d793DefdCFC67D7E12DBa3'}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-2 hover:bg-[#161616]/50 rounded-lg transition-colors group"
+                  >
+                    <span className="text-sm text-gray-400 group-hover:text-gray-300">Batch Transactions</span>
+                    <ExternalLink className="w-3 h-3 text-gray-600 group-hover:text-[#00EF8B]" />
+                  </a>
+                  <a
+                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_SCHEDULED_CONTRACT_ADDRESS || '0xfF0e7F71a0e19E0BF037Bd90Ba30A2Ee409E53a7'}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-2 hover:bg-[#161616]/50 rounded-lg transition-colors group"
+                  >
+                    <span className="text-sm text-gray-400 group-hover:text-gray-300">Scheduled Transactions</span>
+                    <ExternalLink className="w-3 h-3 text-gray-600 group-hover:text-[#00EF8B]" />
+                  </a>
+                  <a
+                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_FLOW_ACTIONS_CONTRACT_ADDRESS || '0xe4ab654a03826E15039913D0D0E1E4Af2117bA0d'}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-2 hover:bg-[#161616]/50 rounded-lg transition-colors group"
+                  >
+                    <span className="text-sm text-gray-400 group-hover:text-gray-300">Flow Actions</span>
+                    <ExternalLink className="w-3 h-3 text-gray-600 group-hover:text-[#00EF8B]" />
+                  </a>
+                  <a
+                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_LENDING_CONTRACT_ADDRESS || '0x3b4cAE62020487263Fc079312f9199a1b014BF6b'}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-2 hover:bg-[#161616]/50 rounded-lg transition-colors group"
+                  >
+                    <span className="text-sm text-gray-400 group-hover:text-gray-300">Lending Protocol</span>
                     <ExternalLink className="w-3 h-3 text-gray-600 group-hover:text-[#00EF8B]" />
                   </a>
                 </div>
@@ -358,7 +444,7 @@ export default function Dashboard() {
 
                 {/* Chat container - increased height */}
                 <div className="relative h-[700px] rounded-3xl overflow-hidden border border-[#2A2A2A]/50 backdrop-blur-xl bg-[#1E1E1E]/40 shadow-2xl">
-                  <ChatTransactionInterface />
+                  <ChatTransactionInterface ref={chatInterfaceRef} />
                 </div>
 
                 {/* Corner accents */}

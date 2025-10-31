@@ -4,7 +4,11 @@
 import type * as erc20TokenFactorySol from "./ERC20TokenFactory.sol";
 export type { erc20TokenFactorySol };
 export type { AddressBook } from "./AddressBook";
+export type { BatchTransactions } from "./BatchTransactions";
 export type { DomainRegistry } from "./DomainRegistry";
+export type { FlowActions } from "./FlowActions";
+export type { LendingProtocol } from "./LendingProtocol";
 export type { RedeemLinksEscrow } from "./RedeemLinksEscrow";
+export type { ScheduledTransactions } from "./ScheduledTransactions";
 export type { SecureStorage } from "./SecureStorage";
 export type { UniversalNFT } from "./UniversalNFT";

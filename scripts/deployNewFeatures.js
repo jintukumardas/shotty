@@ -46,22 +46,9 @@ async function deployWithRetry(contractName, maxRetries = 3, delayMs = 5000) {
 async function main() {
   const { ethers } = hre;
 
-  console.log("🚀 Starting deployment to Flow EVM Testnet...\n");
+  console.log("🚀 Deploying New Features to Flow EVM Testnet...\n");
 
-  // Check if private key is configured
   const signers = await ethers.getSigners();
-
-  if (signers.length === 0) {
-    console.error("❌ ERROR: No deployer account found!");
-    console.error("📝 Please set FLOW_PRIVATE_KEY in your .env.local file");
-    console.error("\nTo fix this:");
-    console.error("1. Create or import a wallet in MetaMask");
-    console.error("2. Export the private key (Account Details > Export Private Key)");
-    console.error("3. Add it to .env.local: FLOW_PRIVATE_KEY=your_private_key_here");
-    console.error("4. Get testnet FLOW from: https://faucet.flow.com/fund-account\n");
-    process.exit(1);
-  }
-
   const deployer = signers[0];
   const network = await ethers.provider.getNetwork();
   const balance = await ethers.provider.getBalance(deployer.address);
@@ -72,12 +59,9 @@ async function main() {
   console.log("  Chain ID:", network.chainId.toString());
   console.log("  Balance:", ethers.formatEther(balance), "FLOW\n");
 
-  // Check if deployer has sufficient balance
   if (balance === 0n) {
     console.error("⚠️  WARNING: Deployer balance is 0 FLOW!");
-    console.error("📝 You need testnet FLOW to deploy contracts");
-    console.error("🚰 Get testnet FLOW from: https://faucet.flow.com/fund-account");
-    console.error("   Use address:", deployer.address, "\n");
+    console.error("🚰 Get testnet FLOW from: https://faucet.flow.com/fund-account\n");
     process.exit(1);
   }
 
@@ -88,76 +72,35 @@ async function main() {
     contracts: {},
   };
 
-  // Deploy contracts with retry logic and delays
-  try {
-    const redeemResult = await deployWithRetry("RedeemLinksEscrow", 3, 5000);
-    deployedContracts.contracts.RedeemLinksEscrow = redeemResult.address;
-  } catch (error) {
-    console.error("⚠️  Continuing despite RedeemLinksEscrow deployment failure");
-  }
+  // Deploy new feature contracts
+  console.log("🔥 Deploying New Feature Contracts...\n");
 
-  try {
-    const nftResult = await deployWithRetry("UniversalNFT", 3, 5000);
-    deployedContracts.contracts.UniversalNFT = nftResult.address;
-  } catch (error) {
-    console.error("⚠️  Continuing despite UniversalNFT deployment failure");
-  }
-
-  try {
-    const domainResult = await deployWithRetry("DomainRegistry", 3, 5000);
-    deployedContracts.contracts.DomainRegistry = domainResult.address;
-  } catch (error) {
-    console.error("⚠️  Continuing despite DomainRegistry deployment failure");
-  }
-
-  try {
-    const addressBookResult = await deployWithRetry("AddressBook", 3, 5000);
-    deployedContracts.contracts.AddressBook = addressBookResult.address;
-  } catch (error) {
-    console.error("⚠️  Continuing despite AddressBook deployment failure");
-  }
-
-  try {
-    const secureStorageResult = await deployWithRetry("SecureStorage", 3, 5000);
-    deployedContracts.contracts.SecureStorage = secureStorageResult.address;
-  } catch (error) {
-    console.error("⚠️  Continuing despite SecureStorage deployment failure");
-  }
-
-  try {
-    const tokenFactoryResult = await deployWithRetry("ERC20TokenFactory", 3, 5000);
-    deployedContracts.contracts.ERC20TokenFactory = tokenFactoryResult.address;
-  } catch (error) {
-    console.error("⚠️  Continuing despite ERC20TokenFactory deployment failure");
-  }
-
-  // Deploy new contracts
   try {
     const batchResult = await deployWithRetry("BatchTransactions", 3, 5000);
     deployedContracts.contracts.BatchTransactions = batchResult.address;
   } catch (error) {
-    console.error("⚠️  Continuing despite BatchTransactions deployment failure");
+    console.error("⚠️  BatchTransactions deployment failed");
   }
 
   try {
     const scheduledResult = await deployWithRetry("ScheduledTransactions", 3, 5000);
     deployedContracts.contracts.ScheduledTransactions = scheduledResult.address;
   } catch (error) {
-    console.error("⚠️  Continuing despite ScheduledTransactions deployment failure");
+    console.error("⚠️  ScheduledTransactions deployment failed");
   }
 
   try {
     const flowActionsResult = await deployWithRetry("FlowActions", 3, 5000);
     deployedContracts.contracts.FlowActions = flowActionsResult.address;
   } catch (error) {
-    console.error("⚠️  Continuing despite FlowActions deployment failure");
+    console.error("⚠️  FlowActions deployment failed");
   }
 
   try {
     const lendingResult = await deployWithRetry("LendingProtocol", 3, 5000);
     deployedContracts.contracts.LendingProtocol = lendingResult.address;
   } catch (error) {
-    console.error("⚠️  Continuing despite LendingProtocol deployment failure");
+    console.error("⚠️  LendingProtocol deployment failed");
   }
 
   // Save deployment info
@@ -168,7 +111,7 @@ async function main() {
 
   const deploymentFile = path.join(
     deploymentsDir,
-    `deployment-${network.name}-${Date.now()}.json`
+    `new-features-${network.name}-${Date.now()}.json`
   );
   fs.writeFileSync(deploymentFile, JSON.stringify(deployedContracts, null, 2));
 
@@ -193,30 +136,6 @@ async function main() {
     }
   };
 
-  if (deployedContracts.contracts.RedeemLinksEscrow) {
-    updateEnvVar("NEXT_PUBLIC_ESCROW_CONTRACT_ADDRESS", deployedContracts.contracts.RedeemLinksEscrow);
-  }
-
-  if (deployedContracts.contracts.UniversalNFT) {
-    updateEnvVar("NEXT_PUBLIC_NFT_CONTRACT_ADDRESS", deployedContracts.contracts.UniversalNFT);
-  }
-
-  if (deployedContracts.contracts.DomainRegistry) {
-    updateEnvVar("NEXT_PUBLIC_DOMAIN_CONTRACT_ADDRESS", deployedContracts.contracts.DomainRegistry);
-  }
-
-  if (deployedContracts.contracts.AddressBook) {
-    updateEnvVar("NEXT_PUBLIC_ADDRESSBOOK_CONTRACT_ADDRESS", deployedContracts.contracts.AddressBook);
-  }
-
-  if (deployedContracts.contracts.SecureStorage) {
-    updateEnvVar("NEXT_PUBLIC_SECURESTORAGE_CONTRACT_ADDRESS", deployedContracts.contracts.SecureStorage);
-  }
-
-  if (deployedContracts.contracts.ERC20TokenFactory) {
-    updateEnvVar("NEXT_PUBLIC_TOKEN_FACTORY_CONTRACT_ADDRESS", deployedContracts.contracts.ERC20TokenFactory);
-  }
-
   if (deployedContracts.contracts.BatchTransactions) {
     updateEnvVar("NEXT_PUBLIC_BATCH_CONTRACT_ADDRESS", deployedContracts.contracts.BatchTransactions);
   }
@@ -236,10 +155,15 @@ async function main() {
   fs.writeFileSync(envPath, envContent.trim() + "\n");
   console.log("✅ Updated .env.local with contract addresses\n");
 
-  console.log("🎉 Deployment complete!");
+  console.log("🎉 New Features Deployment Complete!");
   console.log("📄 Deployment details saved to:", deploymentFile);
   console.log("\n📋 Deployed Contracts Summary:");
   console.log(JSON.stringify(deployedContracts.contracts, null, 2));
+
+  console.log("\n💡 Next Steps:");
+  console.log("  1. Verify contracts on FlowScan (if needed)");
+  console.log("  2. Test the contracts with the test scripts");
+  console.log("  3. Integrate with the frontend services");
 }
 
 main()
