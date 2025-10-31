@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 
-const PUSH_CHAIN_EXPLORER_API = 'https://donut.push.network/api';
+const PUSH_CHAIN_EXPLORER_API = 'https://evm-testnet.flowscan.io/api';
 
 export interface Transaction {
   hash: string;
@@ -37,7 +37,7 @@ export class TransactionService {
 
   constructor() {
     this.explorerApiUrl = PUSH_CHAIN_EXPLORER_API;
-    this.providerUrl = process.env.NEXT_PUBLIC_PUSH_CHAIN_RPC || 'https://evm.rpc-testnet-donut-node2.push.org/';
+    this.providerUrl = process.env.NEXT_PUBLIC_PUSH_CHAIN_RPC || 'https://testnet.evm.nodes.onflow.org/';
   }
 
   /**
@@ -342,7 +342,7 @@ Tx: ${this.shortenHash(tx.hash)}
    * Get explorer URL for transaction
    */
   getTransactionUrl(txHash: string): string {
-    return `https://donut.push.network/tx/${txHash}`;
+    return `https://evm-testnet.flowscan.io/tx/${txHash}`;
   }
 }
 

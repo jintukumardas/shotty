@@ -92,37 +92,37 @@ export default function ChatPage() {
             <div className="bg-[#1E1E1E]/80 backdrop-blur-xl rounded-xl p-4 border border-[#2A2A2A]/50 hover:border-purple-500/50 transition-colors">
               <h3 className="text-sm font-semibold text-white mb-2">🌐 Register Domain</h3>
               <p className="text-xs text-gray-400">
-                "Register domain myname.push"
+                "Register domain myname.flow"
               </p>
             </div>
             <div className="bg-[#1E1E1E]/80 backdrop-blur-xl rounded-xl p-4 border border-[#2A2A2A]/50 hover:border-purple-500/50 transition-colors">
               <h3 className="text-sm font-semibold text-white mb-2">🔎 Resolve Domain</h3>
               <p className="text-xs text-gray-400">
-                "Resolve domain alice.push"
+                "Resolve domain alice.flow"
               </p>
             </div>
             <div className="bg-[#1E1E1E]/80 backdrop-blur-xl rounded-xl p-4 border border-[#2A2A2A]/50 hover:border-purple-500/50 transition-colors">
               <h3 className="text-sm font-semibold text-white mb-2">📝 Update Domain</h3>
               <p className="text-xs text-gray-400">
-                "Update alice.push to 0x123..."
+                "Update alice.flow to 0x123..."
               </p>
             </div>
             <div className="bg-[#1E1E1E]/80 backdrop-blur-xl rounded-xl p-4 border border-[#2A2A2A]/50 hover:border-purple-500/50 transition-colors">
               <h3 className="text-sm font-semibold text-white mb-2">🔄 Transfer Domain</h3>
               <p className="text-xs text-gray-400">
-                "Transfer alice.push to 0x456..."
+                "Transfer alice.flow to 0x456..."
               </p>
             </div>
             <div className="bg-[#1E1E1E]/80 backdrop-blur-xl rounded-xl p-4 border border-[#2A2A2A]/50 hover:border-purple-500/50 transition-colors">
               <h3 className="text-sm font-semibold text-white mb-2">♻️ Renew Domain</h3>
               <p className="text-xs text-gray-400">
-                "Renew domain alice.push"
+                "Renew domain alice.flow"
               </p>
             </div>
             <div className="bg-[#1E1E1E]/80 backdrop-blur-xl rounded-xl p-4 border border-[#2A2A2A]/50 hover:border-purple-500/50 transition-colors">
               <h3 className="text-sm font-semibold text-white mb-2">✅ Check Domain</h3>
               <p className="text-xs text-gray-400">
-                "Is bitcoin.push available?"
+                "Is bitcoin.flow available?"
               </p>
             </div>
             <div className="bg-[#1E1E1E]/80 backdrop-blur-xl rounded-xl p-4 border border-[#2A2A2A]/50 hover:border-purple-500/50 transition-colors">

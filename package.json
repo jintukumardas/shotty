@@ -7,8 +7,8 @@
     "build": "next build --turbopack",
     "start": "next start",
     "compile": "hardhat compile",
-    "deploy": "hardhat run scripts/deploy.ts --network flowEvmTestnet",
-    "deploy:local": "hardhat run scripts/deploy.ts --network localhost"
+    "deploy": "hardhat run scripts/deploy.js --network flowEvmTestnet",
+    "deploy:local": "hardhat run scripts/deploy.js --network localhost"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

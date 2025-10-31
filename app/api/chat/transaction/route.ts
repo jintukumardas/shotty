@@ -76,9 +76,9 @@ NFT ACTIONS:
   - Examples:
     * "Transfer NFT #6 to 0x123..." → tokenId=6, recipient="0x123..."
     * "I would like to transfer my NFT #6 to 0x123..." → tokenId=6, recipient="0x123..."
-    * "Send NFT 10 to alice.push" → tokenId=10, recipient="alice.push"
+    * "Send NFT 10 to alice.flow" → tokenId=10, recipient="alice.flow"
   - CRITICAL: Look for ANY number near "NFT" or "#" as the tokenId
-  - CRITICAL: Look for 0x address or .push domain after "to" as the recipient
+  - CRITICAL: Look for 0x address or .flow domain after "to" as the recipient
 - query_nfts: Show user's NFTs (no extraction needed)
 
 DOMAIN ACTIONS:
@@ -93,7 +93,7 @@ DOMAIN ACTIONS:
 - update_domain: Update what address a domain points to (domain resolution)
   - Extract: domainData.domainName, domainData.resolvedAddress OR recipient (new address to point to)
   - Keywords: "update", "change", "point to", "resolve to"
-  - Example: "Update alice.push to point to 0x123..."
+  - Example: "Update alice.flow to point to 0x123..."
   - Requires confirmation
 - renew_domain: Extend domain registration for another year (365 days)
   - Extract: domainData.domainName
@@ -103,7 +103,7 @@ DOMAIN ACTIONS:
 - check_domain_availability: Check if a domain is available for registration
   - Extract: domainData.domainName
   - Keywords: "is available", "is taken", "check", "available"
-  - Example: "Is bitcoin.push available?"
+  - Example: "Is bitcoin.flow available?"
   - No confirmation needed
 - query_domains: Show all domains owned by the user
   - Keywords: "show my domains", "list my domains", "what domains do I own"
@@ -165,7 +165,7 @@ ERC20 TOKEN ACTIONS:
     * "Transfer 100 ERC20 token 0x45BD... to 0xa4bD..." → contractAddress="0x45BD...", recipient="0xa4bD...", amount=100
     * "Transfer ERC20 token 0x45BD... to 0xa4bD..." → contractAddress="0x45BD...", recipient="0xa4bD...", amount=null
     * "Send 100 token 0x123... to 0x456..." → contractAddress="0x123...", amount=100, recipient="0x456..."
-    * "Transfer token 0xABC... to alice.push" → contractAddress="0xABC...", recipient="alice.push", amount=null
+    * "Transfer token 0xABC... to alice.flow" → contractAddress="0xABC...", recipient="alice.flow", amount=null
   - CRITICAL DETECTION RULES:
     * If message contains phrase "token 0x" or "ERC20 0x" or "ERC20 token 0x" → MUST use action "transfer_erc20"
     * The 0x address IMMEDIATELY after "token" or "ERC20" is the CONTRACT ADDRESS (goes in erc20Data.contractAddress)
@@ -327,7 +327,7 @@ Format your response as JSON with:
       // Check for uppercase letters
       if (/[A-Z]/.test(domainName)) {
         return NextResponse.json({
-          response: '❌ Domain name must be all lowercase. Please use lowercase letters only (e.g., myname.push not MyName.push)',
+          response: '❌ Domain name must be all lowercase. Please use lowercase letters only (e.g., myname.flow not MyName.flow)',
           intent: {
             action: 'other',
             amount: null,
@@ -339,10 +339,10 @@ Format your response as JSON with:
         });
       }
 
-      // Check for .push extension
-      if (!domainName.endsWith('.push')) {
+      // Check for .flow extension
+      if (!domainName.endsWith('.flow')) {
         return NextResponse.json({
-          response: '❌ Invalid domain name. Only .push domains are allowed (e.g., myname.push)',
+          response: '❌ Invalid domain name. Only .flow domains are allowed (e.g., myname.flow)',
           intent: {
             action: 'other',
             amount: null,

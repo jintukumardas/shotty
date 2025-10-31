@@ -1,7 +1,7 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactNode } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { WagmiProvider, createConfig, http } from 'wagmi';
 import { RainbowKitProvider, getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { mainnet, sepolia } from 'wagmi/chains';
@@ -63,7 +63,7 @@ const config = getDefaultConfig({
   appName: 'Shotty - AI Butler for Flow Network',
   projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID', // Get from WalletConnect Cloud
   chains: [flowEvmTestnet, flowEvmMainnet, mainnet, sepolia],
-  ssr: true, // Enable SSR for Next.js
+  ssr: false, // Disable SSR to avoid indexedDB errors - handled manually in component
 });
 
 // Create React Query client
@@ -79,6 +79,18 @@ const queryClient = new QueryClient({
 export function Providers({ children }: { children: ReactNode }) {
   // Get Flow network from environment (defaults to testnet)
   const network = (process.env.NEXT_PUBLIC_FLOW_NETWORK as 'testnet' | 'mainnet') || 'testnet';
+
+  // Only render wallet providers on client side to avoid indexedDB SSR errors
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Render children without wallet context during SSR
+  if (!mounted) {
+    return <>{children}</>;
+  }
 
   return (
     <WagmiProvider config={config}>

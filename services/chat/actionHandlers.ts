@@ -113,7 +113,7 @@ export async function handleTransferNFT(
     // Resolve recipient if it's a domain name
     let recipientAddress = recipient.trim();
 
-    if (recipientAddress.endsWith('.push')) {
+    if (recipientAddress.endsWith('.flow')) {
       console.log('🔍 Resolving domain for NFT transfer:', recipientAddress);
       try {
         const domainService = getDomainService();
@@ -224,7 +224,7 @@ export async function handleRegisterDomain(
     if (!domainData?.domainName) {
       return {
         success: false,
-        message: 'Please provide a domain name to register. For example: "Register domain myname.push"',
+        message: 'Please provide a domain name to register. For example: "Register domain myname.flow"',
         error: 'Missing domain name',
       };
     }
@@ -423,7 +423,7 @@ export async function handleUpdateDomain(
     if (!domainData?.domainName) {
       return {
         success: false,
-        message: 'Please provide a domain name to update. Example: "Update alice.push to point to 0x123..."',
+        message: 'Please provide a domain name to update. Example: "Update alice.flow to point to 0x123..."',
         error: 'Missing domain name',
       };
     }
@@ -506,7 +506,7 @@ export async function handleRenewDomain(
     if (!domainData?.domainName) {
       return {
         success: false,
-        message: 'Please provide a domain name to renew. Example: "Renew domain alice.push"',
+        message: 'Please provide a domain name to renew. Example: "Renew domain alice.flow"',
         error: 'Missing domain name',
       };
     }
@@ -637,7 +637,7 @@ export async function handleQueryDomains(
     if (ownedDomains.length === 0) {
       return {
         success: true,
-        message: "You don't own any domains yet. Try registering one with 'Register domain myname.push'",
+        message: "You don't own any domains yet. Try registering one with 'Register domain myname.flow'",
         data: { domains: [] },
       };
     }

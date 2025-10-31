@@ -47,3 +47,5 @@ next-env.d.ts
 /artifacts
 /deployments
 typechain-types
+
+*.md

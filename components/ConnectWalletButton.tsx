@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Wallet, Loader2, X } from 'lucide-react';
 import { useFlowWallet } from '@/services/blockchain/flowWallet';
+import { formatBalance } from '@/utils/formatNumber';
 
 /**
  * Enhanced Connect Wallet Button with Flow support
@@ -85,7 +86,7 @@ export function ConnectWalletButton() {
                   <div className="bg-[#2A2A2A]/50 rounded-xl p-4">
                     <div className="text-sm text-gray-400 mb-1">Balance</div>
                     <div className="text-2xl font-bold bg-gradient-to-r from-[#00EF8B] to-[#00D9FF] bg-clip-text text-transparent">
-                      {parseFloat(balance).toFixed(4)} FLOW
+                      {formatBalance(balance)} FLOW
                     </div>
                   </div>
                 )}

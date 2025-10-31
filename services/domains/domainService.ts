@@ -503,8 +503,8 @@ export function isValidDomainName(domainName: string): boolean {
     return false;
   }
 
-  // Check if domain ends with .push
-  if (!domainName.endsWith('.push')) {
+  // Check if domain ends with .flow
+  if (!domainName.endsWith('.flow')) {
     return false;
   }
 
@@ -532,11 +532,11 @@ export function validateDomainName(domainName: string): {
     };
   }
 
-  // Check if domain ends with .push
-  if (!domainName.endsWith('.push')) {
+  // Check if domain ends with .flow
+  if (!domainName.endsWith('.flow')) {
     return {
       valid: false,
-      error: 'Invalid domain name. Only .push domains are allowed (e.g., myname.push)',
+      error: 'Invalid domain name. Only .flow domains are allowed (e.g., myname.flow)',
     };
   }
 
@@ -545,7 +545,7 @@ export function validateDomainName(domainName: string): {
   if (hasUppercase) {
     return {
       valid: false,
-      error: 'Domain name must be all lowercase. Please use lowercase letters only (e.g., myname.push not MyName.push)',
+      error: 'Domain name must be all lowercase. Please use lowercase letters only (e.g., myname.flow not MyName.flow)',
     };
   }
 
@@ -554,7 +554,7 @@ export function validateDomainName(domainName: string): {
   if (!lowercaseRegex.test(domainName)) {
     return {
       valid: false,
-      error: 'Domain name contains invalid characters. Use only lowercase letters, numbers, hyphens, and dots (e.g., my-name.push)',
+      error: 'Domain name contains invalid characters. Use only lowercase letters, numbers, hyphens, and dots (e.g., my-name.flow)',
     };
   }
 

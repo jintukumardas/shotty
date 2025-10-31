@@ -12,7 +12,7 @@ describe("DomainRegistry", function () {
   let user2: SignerWithAddress;
 
   const REGISTRATION_FEE = ethers.parseEther("0.01");
-  const DOMAIN_NAME = "mytest.push";
+  const DOMAIN_NAME = "mytest.flow";
   const CHAIN_ID = 42101;
   const METADATA = JSON.stringify({ description: "Test domain", avatar: "ipfs://..." });
 
@@ -129,7 +129,7 @@ describe("DomainRegistry", function () {
 
   describe("Batch Registration", function () {
     it("Should batch register multiple domains", async function () {
-      const domains = ["test1.push", "test2.push", "test3.push"];
+      const domains = ["test1.flow", "test2.flow", "test3.flow"];
       const chainIds = [CHAIN_ID, CHAIN_ID, CHAIN_ID];
       const addresses = [user1.address, user1.address, user1.address];
       const metadatas = [METADATA, METADATA, METADATA];
@@ -148,7 +148,7 @@ describe("DomainRegistry", function () {
     });
 
     it("Should fail if array lengths mismatch", async function () {
-      const domains = ["test1.push", "test2.push"];
+      const domains = ["test1.flow", "test2.flow"];
       const chainIds = [CHAIN_ID];
       const addresses = [user1.address, user1.address];
       const metadatas = [METADATA, METADATA];
@@ -184,7 +184,7 @@ describe("DomainRegistry", function () {
 
     it("Should fail to resolve non-existent domain", async function () {
       await expect(
-        domainRegistry.resolveDomain("nonexistent.push")
+        domainRegistry.resolveDomain("nonexistent.flow")
       ).to.be.revertedWith("Domain does not exist");
     });
 
@@ -320,7 +320,7 @@ describe("DomainRegistry", function () {
 
     it("Should get owned domains", async function () {
       await domainRegistry.connect(user1).registerDomain(
-        "test1.push",
+        "test1.flow",
         CHAIN_ID,
         user1.address,
         METADATA,
@@ -328,7 +328,7 @@ describe("DomainRegistry", function () {
       );
 
       await domainRegistry.connect(user1).registerDomain(
-        "test2.push",
+        "test2.flow",
         CHAIN_ID,
         user1.address,
         METADATA,

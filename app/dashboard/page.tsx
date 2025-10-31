@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useWallet } from '@/services/blockchain/useWallet';
 import ChatTransactionInterface from '@/components/ChatTransactionInterface';
 import { Bot, Sparkles, Zap, ChevronDown, Wallet, ExternalLink, Activity, Link as LinkIcon, Send, Coins, QrCode, Users, Globe, Image, DollarSign } from 'lucide-react';
+import { formatBalance } from '@/utils/formatNumber';
 
 export default function Dashboard() {
   const { isConnected, address, balance, chainId } = useWallet();
@@ -122,7 +123,7 @@ export default function Dashboard() {
                     <span className="text-sm text-gray-400">Balance</span>
                   </div>
                   <div className="text-3xl font-bold bg-gradient-to-r from-[#00EF8B] to-[#00D9FF] bg-clip-text text-transparent">
-                    {balance || '0.0000'}
+                    {formatBalance(balance || '0')}
                   </div>
                   <div className="text-sm text-gray-500 mt-1">{nativeTokenSymbol}</div>
                   <div className="mt-3 pt-3 border-t border-[#2A2A2A]/50">
@@ -188,7 +189,7 @@ export default function Dashboard() {
                     <Globe className="w-4 h-4 text-violet-400 mt-0.5 flex-shrink-0" />
                     <div>
                       <div className="text-sm font-medium text-white">Register Domains</div>
-                      <div className="text-xs text-gray-500">Reserve .push domains</div>
+                      <div className="text-xs text-gray-500">Reserve .flow domains</div>
                     </div>
                   </div>
 
@@ -196,7 +197,7 @@ export default function Dashboard() {
                     <Globe className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" />
                     <div>
                       <div className="text-sm font-medium text-white">Resolve Domains</div>
-                      <div className="text-xs text-gray-500">Lookup .push addresses</div>
+                      <div className="text-xs text-gray-500">Lookup .flow addresses</div>
                     </div>
                   </div>
 
@@ -266,7 +267,7 @@ export default function Dashboard() {
                 <h3 className="text-sm font-semibold text-white mb-4">Deployed Contracts</h3>
                 <div className="space-y-2">
                   <a
-                    href={`https://donut.push.network/address/${process.env.NEXT_PUBLIC_ESCROW_CONTRACT_ADDRESS || '0x015655A8bBaCA2a2be4b8F564f0EAC4EdcCa8Cd3'}`}
+                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_ESCROW_CONTRACT_ADDRESS || '0x015655A8bBaCA2a2be4b8F564f0EAC4EdcCa8Cd3'}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-2 hover:bg-[#161616]/50 rounded-lg transition-colors group"
@@ -275,7 +276,7 @@ export default function Dashboard() {
                     <ExternalLink className="w-3 h-3 text-gray-600 group-hover:text-[#00EF8B]" />
                   </a>
                   <a
-                    href={`https://donut.push.network/address/${process.env.NEXT_PUBLIC_NFT_CONTRACT_ADDRESS || '0x26E82B153ba980492DB3c7D8D898C48248E5b0f9'}`}
+                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_NFT_CONTRACT_ADDRESS || '0x26E82B153ba980492DB3c7D8D898C48248E5b0f9'}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-2 hover:bg-[#161616]/50 rounded-lg transition-colors group"
@@ -284,7 +285,7 @@ export default function Dashboard() {
                     <ExternalLink className="w-3 h-3 text-gray-600 group-hover:text-[#00EF8B]" />
                   </a>
                   <a
-                    href={`https://donut.push.network/address/${process.env.NEXT_PUBLIC_DOMAIN_CONTRACT_ADDRESS || '0x05153fcD5eA3c5515345B886b5D92E3bf7e30516'}`}
+                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_DOMAIN_CONTRACT_ADDRESS || '0x05153fcD5eA3c5515345B886b5D92E3bf7e30516'}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-2 hover:bg-[#161616]/50 rounded-lg transition-colors group"
@@ -293,7 +294,7 @@ export default function Dashboard() {
                     <ExternalLink className="w-3 h-3 text-gray-600 group-hover:text-[#00EF8B]" />
                   </a>
                   <a
-                    href={`https://donut.push.network/address/${process.env.NEXT_PUBLIC_ADDRESSBOOK_CONTRACT_ADDRESS || '0x369fB3ED4FD33B365354E116cB0E556b541A3796'}`}
+                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_ADDRESSBOOK_CONTRACT_ADDRESS || '0x369fB3ED4FD33B365354E116cB0E556b541A3796'}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-2 hover:bg-[#161616]/50 rounded-lg transition-colors group"
@@ -302,7 +303,7 @@ export default function Dashboard() {
                     <ExternalLink className="w-3 h-3 text-gray-600 group-hover:text-[#00EF8B]" />
                   </a>
                   <a
-                    href={`https://donut.push.network/address/${process.env.NEXT_PUBLIC_SECURESTORAGE_CONTRACT_ADDRESS || '0x51cda9f73020429854c43Ddc51f6cA0a394629a2'}`}
+                    href={`https://evm-testnet.flowscan.io/address/${process.env.NEXT_PUBLIC_SECURESTORAGE_CONTRACT_ADDRESS || '0x51cda9f73020429854c43Ddc51f6cA0a394629a2'}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-2 hover:bg-[#161616]/50 rounded-lg transition-colors group"
@@ -318,7 +319,7 @@ export default function Dashboard() {
                 <h3 className="text-sm font-semibold text-white mb-4">Quick Links</h3>
                 <div className="space-y-2">
                   <a
-                    href="https://donut.push.network"
+                    href="https://evm-testnet.flowscan.io"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-2 hover:bg-[#161616]/50 rounded-lg transition-colors group"
@@ -327,7 +328,7 @@ export default function Dashboard() {
                     <ExternalLink className="w-3 h-3 text-gray-600 group-hover:text-[#00EF8B]" />
                   </a>
                   <a
-                    href="https://faucet.push.org"
+                    href="https://faucet.flow.com/fund-account"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-2 hover:bg-[#161616]/50 rounded-lg transition-colors group"
@@ -336,12 +337,12 @@ export default function Dashboard() {
                     <ExternalLink className="w-3 h-3 text-gray-600 group-hover:text-[#00EF8B]" />
                   </a>
                   <a
-                    href="https://push.org"
+                    href="https://developers.flow.com"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-between p-2 hover:bg-[#161616]/50 rounded-lg transition-colors group"
                   >
-                    <span className="text-sm text-gray-400 group-hover:text-gray-300">Push Chain Docs</span>
+                    <span className="text-sm text-gray-400 group-hover:text-gray-300">Flow Docs</span>
                     <ExternalLink className="w-3 h-3 text-gray-600 group-hover:text-[#00EF8B]" />
                   </a>
                 </div>
@@ -368,7 +369,7 @@ export default function Dashboard() {
               <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-[#1E1E1E]/40 backdrop-blur-xl rounded-xl p-4 border border-[#2A2A2A]/30">
                   <div className="text-xs text-[#00EF8B] font-semibold mb-1">💸 Send Tokens</div>
-                  <code className="text-xs text-gray-500">"Send 1 ETH to 0x..."</code>
+                  <code className="text-xs text-gray-500">"Send 1 FLOW to 0x..."</code>
                 </div>
                 <div className="bg-[#1E1E1E]/40 backdrop-blur-xl rounded-xl p-4 border border-[#2A2A2A]/30">
                   <div className="text-xs text-[#00D9FF] font-semibold mb-1">🎨 Mint NFT</div>
@@ -376,7 +377,7 @@ export default function Dashboard() {
                 </div>
                 <div className="bg-[#1E1E1E]/40 backdrop-blur-xl rounded-xl p-4 border border-[#2A2A2A]/30">
                   <div className="text-xs text-violet-400 font-semibold mb-1">🌐 Register Domain</div>
-                  <code className="text-xs text-gray-500">"Register domain myname.push"</code>
+                  <code className="text-xs text-gray-500">"Register domain myname.flow"</code>
                 </div>
                 <div className="bg-[#1E1E1E]/40 backdrop-blur-xl rounded-xl p-4 border border-[#2A2A2A]/30">
                   <div className="text-xs text-orange-400 font-semibold mb-1">🔗 Payment Link</div>

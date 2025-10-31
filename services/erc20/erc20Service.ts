@@ -7,7 +7,7 @@ import { ethers, Contract } from 'ethers';
 
 // Contract addresses (will be set after deployment)
 const FACTORY_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_ERC20_FACTORY_ADDRESS || '';
-const PUSH_CHAIN_RPC = process.env.NEXT_PUBLIC_PUSH_CHAIN_RPC || 'https://evm.rpc-testnet-donut-node2.push.org/';
+const PUSH_CHAIN_RPC = process.env.NEXT_PUBLIC_PUSH_CHAIN_RPC || 'https://testnet.evm.nodes.onflow.org/';
 
 // ABI for ERC20 Token Factory
 const FACTORY_ABI = [

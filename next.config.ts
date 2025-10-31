@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/push-rpc/:path*',
-        destination: 'https://donut.push.network/:path*',
+        destination: 'https://evm-testnet.flowscan.io/:path*',
       },
     ];
   },

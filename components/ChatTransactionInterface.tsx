@@ -424,7 +424,7 @@ export default function ChatTransactionInterface() {
             if (!intent.token) missingFields.push('token type');
 
             throw new Error(
-              `Missing required information: ${missingFields.join(', ')}. Please specify the ${missingFields.join(' and ')} (e.g., "Send 1 ETH to 0x123...")`
+              `Missing required information: ${missingFields.join(', ')}. Please specify the ${missingFields.join(' and ')} (e.g., "Send 1 FLOW to 0x123...")`
             );
           }
 

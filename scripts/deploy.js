@@ -48,14 +48,38 @@ async function main() {
 
   console.log("🚀 Starting deployment to Flow EVM Testnet...\n");
 
-  const [deployer] = await ethers.getSigners();
+  // Check if private key is configured
+  const signers = await ethers.getSigners();
+
+  if (signers.length === 0) {
+    console.error("❌ ERROR: No deployer account found!");
+    console.error("📝 Please set FLOW_PRIVATE_KEY in your .env.local file");
+    console.error("\nTo fix this:");
+    console.error("1. Create or import a wallet in MetaMask");
+    console.error("2. Export the private key (Account Details > Export Private Key)");
+    console.error("3. Add it to .env.local: FLOW_PRIVATE_KEY=your_private_key_here");
+    console.error("4. Get testnet FLOW from: https://faucet.flow.com/fund-account\n");
+    process.exit(1);
+  }
+
+  const deployer = signers[0];
   const network = await ethers.provider.getNetwork();
+  const balance = await ethers.provider.getBalance(deployer.address);
 
   console.log("📋 Deployment Details:");
   console.log("  Deployer:", deployer.address);
   console.log("  Network:", network.name);
   console.log("  Chain ID:", network.chainId.toString());
-  console.log("  Balance:", ethers.formatEther(await ethers.provider.getBalance(deployer.address)), "FLOW\n");
+  console.log("  Balance:", ethers.formatEther(balance), "FLOW\n");
+
+  // Check if deployer has sufficient balance
+  if (balance === 0n) {
+    console.error("⚠️  WARNING: Deployer balance is 0 FLOW!");
+    console.error("📝 You need testnet FLOW to deploy contracts");
+    console.error("🚰 Get testnet FLOW from: https://faucet.flow.com/fund-account");
+    console.error("   Use address:", deployer.address, "\n");
+    process.exit(1);
+  }
 
   const deployedContracts = {
     network: network.name,
@@ -98,6 +122,13 @@ async function main() {
     deployedContracts.contracts.SecureStorage = secureStorageResult.address;
   } catch (error) {
     console.error("⚠️  Continuing despite SecureStorage deployment failure");
+  }
+
+  try {
+    const tokenFactoryResult = await deployWithRetry("ERC20TokenFactory", 3, 5000);
+    deployedContracts.contracts.ERC20TokenFactory = tokenFactoryResult.address;
+  } catch (error) {
+    console.error("⚠️  Continuing despite ERC20TokenFactory deployment failure");
   }
 
   // Save deployment info
@@ -151,6 +182,10 @@ async function main() {
 
   if (deployedContracts.contracts.SecureStorage) {
     updateEnvVar("NEXT_PUBLIC_SECURESTORAGE_CONTRACT_ADDRESS", deployedContracts.contracts.SecureStorage);
+  }
+
+  if (deployedContracts.contracts.ERC20TokenFactory) {
+    updateEnvVar("NEXT_PUBLIC_TOKEN_FACTORY_CONTRACT_ADDRESS", deployedContracts.contracts.ERC20TokenFactory);
   }
 
   fs.writeFileSync(envPath, envContent.trim() + "\n");

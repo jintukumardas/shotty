@@ -708,12 +708,12 @@ export function parseTransactionIntent(message: string, userAddress: string): Pa
 • "Transfer NFT #123 to 0x..."
 
 **Domains:**
-• "Register domain myname.push"
-• "Resolve domain myname.push"
-• "Transfer domain myname.push to 0x..."
-• "Update myname.push to point to 0x..."
-• "Renew domain myname.push"
-• "Is bitcoin.push available?"
+• "Register domain myname.flow"
+• "Resolve domain myname.flow"
+• "Transfer domain myname.flow to 0x..."
+• "Update myname.flow to point to 0x..."
+• "Renew domain myname.flow"
+• "Is bitcoin.flow available?"
 • "Show my domains"
 
 **Contacts:**
