@@ -58,15 +58,7 @@ const flowEvmMainnet = {
   testnet: false,
 } as const;
 
-// Create wagmi config with RainbowKit
-const config = getDefaultConfig({
-  appName: 'Shotty - AI Butler for Flow Network',
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID', // Get from WalletConnect Cloud
-  chains: [flowEvmTestnet, flowEvmMainnet, mainnet, sepolia],
-  ssr: false, // Disable SSR to avoid indexedDB errors - handled manually in component
-});
-
-// Create React Query client
+// Create React Query client outside component (safe for SSR)
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -77,18 +69,26 @@ const queryClient = new QueryClient({
 });
 
 export function Providers({ children }: { children: ReactNode }) {
-  // Get Flow network from environment (defaults to testnet)
-  const network = (process.env.NEXT_PUBLIC_FLOW_NETWORK as 'testnet' | 'mainnet') || 'testnet';
-
   // Only render wallet providers on client side to avoid indexedDB SSR errors
   const [mounted, setMounted] = useState(false);
+  const [config, setConfig] = useState<any>(null);
 
   useEffect(() => {
-    setMounted(true);
+    // Create wagmi config only on client side
+    if (typeof window !== 'undefined') {
+      const wagmiConfig = getDefaultConfig({
+        appName: 'Shotty - AI Butler for Flow Network',
+        projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID',
+        chains: [flowEvmTestnet, flowEvmMainnet, mainnet, sepolia],
+        ssr: false,
+      });
+      setConfig(wagmiConfig);
+      setMounted(true);
+    }
   }, []);
 
   // Render children without wallet context during SSR
-  if (!mounted) {
+  if (!mounted || !config) {
     return <>{children}</>;
   }
 
