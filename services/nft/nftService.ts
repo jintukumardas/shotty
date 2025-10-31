@@ -53,7 +53,7 @@ export class NFTService {
     // For read-only operations, use Flow EVM RPC provider
     if (readOnly) {
       if (!this.readOnlyContract) {
-        const rpcUrl = process.env.NEXT_PUBLIC_FLOW_EVM_RPC || 'https://evm.rpc-testnet-donut-node2.flow.org/';
+        const rpcUrl = process.env.NEXT_PUBLIC_FLOW_EVM_RPC || 'https://rest-testnet.onflow.org';
         const provider = new ethers.JsonRpcProvider(rpcUrl);
         this.readOnlyContract = new ethers.Contract(
           this.contractAddress,

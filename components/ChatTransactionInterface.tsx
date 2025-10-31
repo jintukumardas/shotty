@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Loader2, CheckCircle, XCircle, Link as LinkIcon, Copy, ExternalLink, Bot, User, Sparkles, Wallet, DollarSign, Gift, ArrowRight, QrCode, Coins } from 'lucide-react';
+import { Send, Loader2, CheckCircle, XCircle, Link as LinkIcon, Copy, ExternalLink, Bot, User, Sparkles, Wallet, DollarSign, Gift, ArrowRight, QrCode, Coins, Share2, MessageCircle, Mail } from 'lucide-react';
 import { ethers } from 'ethers';
 import { useWallet } from '@/services/blockchain/useWallet';
 import { executeTransaction } from '@/services/blockchain/transactionService';
@@ -10,6 +10,7 @@ import { handleChatAction } from '@/services/chat/actionHandlers';
 import MintNFTModal from './MintNFTModal';
 import QRCodeModal from './QRCodeModal';
 import CreateTokenModal from './CreateTokenModal';
+import FlowIcon from './FlowIcon';
 import { uploadNFTWithImage, createNFTMetadata, uploadMetadata } from '@/services/nft/nftService';
 import { getDomainService } from '@/services/domains/domainService';
 
@@ -666,8 +667,9 @@ export default function ChatTransactionInterface() {
   };
 
   const addRedeemLinkMessage = (content: string, redeemLink: any) => {
+    const messageId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const message: Message = {
-      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: messageId,
       role: 'assistant',
       content,
       timestamp: new Date(),
@@ -701,6 +703,32 @@ export default function ChatTransactionInterface() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+  };
+
+  // Share functions for different platforms
+  const shareToWhatsApp = (url: string, amount: string, token: string) => {
+    const message = `🎁 I've created a payment link for ${amount} ${token} on Flow Network!\n\nRedeem here: ${url}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const shareToTwitter = (url: string, amount: string, token: string) => {
+    const message = `🎁 Claim ${amount} ${token} on @flow_blockchain!\n\nRedeem here: ${url}\n\n#FlowNetwork #Web3 #Crypto`;
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`;
+    window.open(twitterUrl, '_blank');
+  };
+
+  const shareToTelegram = (url: string, amount: string, token: string) => {
+    const message = `🎁 I've created a payment link for ${amount} ${token} on Flow Network!\n\nRedeem here: ${url}`;
+    const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(message)}`;
+    window.open(telegramUrl, '_blank');
+  };
+
+  const shareViaEmail = (url: string, amount: string, token: string) => {
+    const subject = `Payment Link: ${amount} ${token} on Flow Network`;
+    const body = `Hi!\n\nI've created a payment link for you.\n\nAmount: ${amount} ${token}\nRedeem URL: ${url}\n\nClick the link to claim your tokens on Flow Network.\n\nBest regards`;
+    const mailtoUrl = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailtoUrl;
   };
 
   const formatTransactionDetails = (intent: any): string => {
@@ -1080,9 +1108,9 @@ export default function ChatTransactionInterface() {
       <div className="flex items-center justify-between p-6 border-b border-[#2A2A2A]/50 backdrop-blur-xl bg-[#1E1E1E]/60">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-[#DD44B9] to-[#FC519F] rounded-lg blur-sm opacity-75"></div>
-            <div className="relative w-10 h-10 bg-gradient-to-br from-[#DD44B9] to-[#FC519F] rounded-lg flex items-center justify-center">
-              <Bot className="w-5 h-5 text-white" />
+            <div className="absolute -inset-1 bg-gradient-to-r from-[#00EF8B] to-[#00D9FF] rounded-lg blur-sm opacity-75"></div>
+            <div className="relative w-10 h-10 bg-[#0D0D0D] rounded-lg flex items-center justify-center border border-[#00EF8B]/30">
+              <FlowIcon size={24} />
             </div>
           </div>
           <div>
@@ -1132,14 +1160,14 @@ export default function ChatTransactionInterface() {
                   ? 'bg-gradient-to-br from-[#DD44B9] to-[#FC519F]'
                   : message.role === 'system'
                   ? 'bg-red-500/20 border border-red-500/30'
-                  : 'bg-[#2A2A2A] border border-[#3A3A3A]'
+                  : 'bg-[#0D0D0D] border border-[#00EF8B]/30'
               }`}>
                 {message.role === 'user' ? (
                   <User className="w-4 h-4 text-white" />
                 ) : message.role === 'system' ? (
                   <XCircle className="w-4 h-4 text-red-400" />
                 ) : (
-                  <Bot className="w-4 h-4 text-[#DD44B9]" />
+                  <FlowIcon size={16} />
                 )}
               </div>
 
@@ -1236,6 +1264,55 @@ export default function ChatTransactionInterface() {
                           >
                             Copy
                           </button>
+                        </div>
+
+                        {/* Share Options - Always visible */}
+                        <div className="pt-3 border-t border-white/5">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Share2 className="w-3.5 h-3.5 text-[#00EF8B]" />
+                            <span className="text-xs font-medium text-[#00EF8B]">Share Link</span>
+                          </div>
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            {/* WhatsApp */}
+                            <button
+                              onClick={() => shareToWhatsApp(message.redeemLink!.url, message.redeemLink!.amount, message.redeemLink!.token)}
+                              className="flex items-center justify-center gap-2 px-3 py-2 bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/30 hover:border-[#25D366]/50 rounded-lg transition-all group"
+                            >
+                              <MessageCircle className="w-4 h-4 text-[#25D366]" />
+                              <span className="text-xs text-[#25D366] font-medium">WhatsApp</span>
+                            </button>
+
+                            {/* X (Twitter) */}
+                            <button
+                              onClick={() => shareToTwitter(message.redeemLink!.url, message.redeemLink!.amount, message.redeemLink!.token)}
+                              className="flex items-center justify-center gap-2 px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/30 rounded-lg transition-all group"
+                            >
+                              <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                              </svg>
+                              <span className="text-xs text-white font-medium">X</span>
+                            </button>
+
+                            {/* Telegram */}
+                            <button
+                              onClick={() => shareToTelegram(message.redeemLink!.url, message.redeemLink!.amount, message.redeemLink!.token)}
+                              className="flex items-center justify-center gap-2 px-3 py-2 bg-[#0088cc]/10 hover:bg-[#0088cc]/20 border border-[#0088cc]/30 hover:border-[#0088cc]/50 rounded-lg transition-all group"
+                            >
+                              <svg className="w-4 h-4 text-[#0088cc]" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
+                              </svg>
+                              <span className="text-xs text-[#0088cc] font-medium">Telegram</span>
+                            </button>
+
+                            {/* Email */}
+                            <button
+                              onClick={() => shareViaEmail(message.redeemLink!.url, message.redeemLink!.amount, message.redeemLink!.token)}
+                              className="flex items-center justify-center gap-2 px-3 py-2 bg-gray-500/10 hover:bg-gray-500/20 border border-gray-500/30 hover:border-gray-500/50 rounded-lg transition-all group"
+                            >
+                              <Mail className="w-4 h-4 text-gray-400" />
+                              <span className="text-xs text-gray-400 font-medium">Email</span>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>

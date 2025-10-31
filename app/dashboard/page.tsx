@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useWallet } from '@/services/blockchain/useWallet';
 import ChatTransactionInterface from '@/components/ChatTransactionInterface';
+import FlowIcon from '@/components/FlowIcon';
 import { Bot, Sparkles, Zap, ChevronDown, Wallet, ExternalLink, Activity, Link as LinkIcon, Send, Coins, QrCode, Users, Globe, Image, DollarSign } from 'lucide-react';
 import { formatBalance } from '@/utils/formatNumber';
 
@@ -55,8 +56,8 @@ export default function Dashboard() {
           <div className="flex items-center justify-center gap-3 mb-4 group">
             <div className="relative">
               <div className="absolute -inset-2 bg-gradient-to-r from-[#00EF8B] to-[#00D9FF] rounded-full blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
-              <div className="relative w-12 h-12 bg-gradient-to-br from-[#00EF8B] to-[#00D9FF] rounded-2xl flex items-center justify-center rotate-3 group-hover:rotate-6 transition-transform">
-                <Bot className="w-6 h-6 text-white" />
+              <div className="relative w-12 h-12 bg-[#0D0D0D] rounded-2xl flex items-center justify-center rotate-3 group-hover:rotate-6 transition-transform border border-[#00EF8B]/20">
+                <FlowIcon size={32} className="drop-shadow-lg" />
               </div>
             </div>
             <div>
